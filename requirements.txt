@@ -1,0 +1,6 @@
+configparser
+docopt
+pyyaml
+alive-progress
+# Pillow
+# exiftool
