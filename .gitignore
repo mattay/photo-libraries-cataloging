@@ -1,1 +1,8 @@
+# File System
+.DS_Store
+
+# Logging
+info.log
+
+# Database
 catalogue/
