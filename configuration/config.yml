@@ -1,0 +1,429 @@
+indexing_cabinate: ./catalogue
+import:
+  volumes:
+    Jedi:
+      - /Volumes/Jedi/ApertureLibraryBackups
+      - /Volumes/Jedi/CLEANUP
+      - /Volumes/Jedi/Photos
+    Padiwan:
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections
+      - /Volumes/Padawan/_Pictures/MemoryCards_Archive
+      - /Volumes/Padawan/_Pictures/_Backups
+      - /Volumes/Padawan/_Pictures/_Exports
+      - /Volumes/Padawan/_Pictures/_Libaries
+      - /Volumes/Padawan/_Pictures/__Raw Photos
+    LaCie:
+      - /Volumes/LaCie/_MASTER_Aperture_20190520
+      - /Volumes/LaCie/_PHOTOS
+      - /Volumes/LaCie/ToValidateBackup
+  extentions:
+    - .PEF
+    - .DNG
+    - .RW2
+    - .jpg
+    - .JPG
+    - .jpeg
+  ignore:
+    - _mini_
+    - _largepv_
+    - masterthumbnail_
+    - fullsizeoutput_
+    - facetile_
+    - /resources/
+    - /Previews/
+    - _n.jpg
+    - _o.jpg
+    - \.__IGP
+    - '[T|t]humb'
+raw_extentions:
+  - .PEF
+  - .DNG
+  - .RW2
+cleanup:
+  preferred:
+    paths:
+      - /Volumes/Jedi/ApertureLibraryBackups/
+      - /Volumes/Padawan/_Pictures/_Backups/Apeture_Import_Backups/
+      - /Volumes/Jedi/Photos/MemoryCards/
+      - /Volumes/Padawan/_Pictures/MemoryCards_Archive/
+      # Libraries
+      - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/
+      # Most Libraries live here
+      - /Volumes/LaCie/_MASTER_Aperture_20190520/
+    files:
+  ignore:
+    paths:
+      # -- PENTAX K10D -- Should probably be keep
+      # - /Volumes/Padawan/_Pictures/__Raw Photos/Egypt/
+    files:
+      # -- PENTAX K10D -- Extentions
+      - /Volumes/LaCie/_MASTER_Aperture_20190520/Kumuka Family Photos.aplibrary/Masters/2009/09/25/20090925-175126/_IGP2894.JPG
+      # -- DMC LX3 --
+      - /Volumes/Padawan/_Pictures/_Exports/AMATA2009/P1010021.JPG
+      # -- Canon DIGITAL IXUS 500 --
+      - /Volumes/Padawan/_Pictures/_Exports/IMG_8360.JPG
+      - '/Volumes/Padawan/_Pictures/_Libaries/iPhoto Library #1/Masters/2006/30:12:2006/IMG_9709.JPG'
+      - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/2006/30:12:2006/IMG_9709.JPG
+      # -- QSS --
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Previews/2007/Kakadu/38550051.jpg
+
+  camera_rules:
+    PENTAX K10D:
+      Owner: Matthew Anderson
+      Location: Keep
+      filters:
+        # Extentions -- PEF -- Keep
+        - condition: extentions
+          matches: !!set {.PEF, .jpg}
+          action: keep
+          file_props:
+            file_extention: .PEF
+            quality: RAW
+            software: K10D Ver 1.00
+            modified: 0
+        - condition: extentions
+          matches: !!set {.PEF, .jpg}
+          action: keep
+          file_props:
+            file_extention: .PEF
+            quality: RAW
+            software: K10D Ver 1.30
+            modified: 0
+        - condition: extentions
+          matches: !!set {.DNG, .jpg}
+          action: keep
+          file_props:
+            file_extention: .DNG
+            quality: RAW
+            software: K10D Ver 1.30
+            modified: 0
+        # Extentions -- JPG -- Keep
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: keep
+          file_props:
+            file_extention: .JPG
+            quality: Best
+            software: K10D Ver 1.00
+            modified: 0
+        # Extentions -- JPG -- Ignore
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            quality: none
+            software: K10D Ver 1.00
+            modified: 1
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: ignore
+          file_props:
+            # file_extention: .jpg
+            quality:
+            software: QuickTime 7.5.5
+            modified: 1
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            quality:
+            software: K10D Ver 1.00
+            modified: 1
+        # Checksums -- PEF
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            file_extention: .PEF
+            modified: 0
+            software: K10D Ver 1.00
+            quality: RAW
+        # Checksums -- JPG
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            file_extention: .JPG
+            modified: 1
+            software: K10D Ver 1.00
+            quality: Best
+        
+    PENTAX K-5:
+      Owner: Matthew Anderson
+      Location: Keep
+      filters:
+        # Extentions -- PEF
+        - condition: extentions
+          matches: !!set {.PEF, .jpg}
+          action: keep
+          file_props:
+            file_extention: .PEF
+            modified: 0
+            quality: RAW
+            software: K-5 Ver 1.14 
+        # Checksums -- 
+        # - condition: checksums
+        #   matches:
+        #   action: keep
+        #   file_props:
+            # file_extention: .JPG
+            # modified: 0
+            # software: Ver.1.2
+    DMC-LX3:
+      Owner: Matthew Anderson
+      Location: Keep
+      filters:
+        # Extentions -- RW2
+        - condition: extentions
+          matches: !!set {'.RW2', '.jpg'}
+          action: keep
+          file_props:
+            file_extention: .RW2
+            modified: 0
+            software: Ver.1.2
+        # Extentions -- JPG
+        - condition: extentions
+          matches: !!set {.jpg, .JPG}
+          action: keep
+          file_props:
+            file_extention: .JPG
+            software: Ver.1.2
+        - condition: extentions
+          matches: !!set {'.JPG', '.RW2', '.jpg'}
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            software: Aperture 3.1
+        # Checksums -- JPG -- Keep
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            file_extention: .JPG
+            modified: 0
+            software: Ver.1.2
+            has_copy_in_subfix: 0
+
+    iPhone 4S:
+      Owner: Matthew Anderson
+      Action Steps: Check Dropbox for duplicates
+      Notes: Ignore exports
+      Location: DropBox
+      filters:
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            modified: 1
+            software: Aperture 3.6
+
+    PENTAX K200D:
+      Owner: Mark
+      Content: MX5 Trackday
+      Action Steps: Check for exported images from raw
+      Plan: Keep sepeate from my collection
+      Location: Collected
+      filters:
+        - condition: extentions
+          matches: !!set {.JPG, .DNG}
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            quality: Best
+    QSS:
+      Notes: Scanned from Film
+      Content: Kakadu trip, maybe others
+      Action Steps: Check for which scans were better quality
+      Location: Keep
+      filters:
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            # software: 
+            mod_date: '2007:10:01'
+    IWS:
+      Notes: Scanned from Film, ignore not kakadu
+      Content: Kakadu trip -> /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/2007/Originals_6
+      Action Steps: Check for which scans were better quality
+      Location: Keep
+      filters:
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            software: '3'
+            has_copy_in_subfix: 0
+
+    Canon DIGITAL IXUS 500:
+      Owner: Family
+      Content: KA Laser repairs, maybe others
+      Notes: Need to understand all content
+      Location: Collected
+      filters:
+        # Extentions -- JPG
+        - condition: extentions
+          matches: !!set {.jpg, .JPG}
+          action: keep
+          file_props:
+            file_extention: .JPG
+        # Checksums -- JPG -- Keep
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            file_extention: .JPG
+            software:
+            quality: Fine
+            has_copy_in_subfix: 0
+        # Checksums -- JPG -- Ignore
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            software: 'QuickTime 7.4.5'
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            software: 'QuickTime 7.1.6'
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            software: 'QuickTime 7.0.3'
+
+    DCR-TRV340E:
+      Owner: Family
+      Notes: Crappy Red square camera
+      Location: Collected
+
+    iPhone 6s:
+      Owner: Matthew Anderson
+      Action Steps: Check Dropbox for duplicates
+      Location: DropBox
+
+    iPhone 5s:
+      Owner: Mum
+      Content: Liam
+      Location: Collected
+
+    DMC-ZS7:
+      Owner: Lisa + Mum
+      Content: Travels
+      Location: Collected
+
+    DMC-TZ2:
+      Owner: Melinda
+      Content: Travels
+      Location: Collected
+
+    u770SW,S770SW:
+      Owner: Melinda
+      Content: Travels
+      Location: Collected
+
+    DiMAGE X:
+      Owner: Other
+      Content: Luke's 70's Party
+      Action Steps: Manualy more
+      Location: Collected
+
+    # Egypt - kamuka family
+    <VLUU L830  / Samsung L830>:
+      Owner: Jessica
+      Content: Egypt kamuka family
+      Location: Collected
+      
+    FinePix S5600:
+      Owner: Tracey
+      Content: Egypt kamuka family
+      Location: Collected
+
+    DMC-TZ15:
+      Owner: Penny Teacher
+      Content: Egypt kamuka family
+      Location: Collected
+
+    DMC-FX12:
+      Owner:
+      Content: Egypt kamuka family
+      Location: Collected
+
+    CYBERSHOT:
+      Owner: Other
+      Content: 2x KA laser images
+      Action Steps:
+      Location: Collected
+
+    Canon PowerShot G9:
+      Owner: Other
+      Content: 1x pannorama
+      Location: Collected
+
+    Canon PowerShot A720 IS:
+      Owner: Other
+      Content: Blood Club
+      Location: Collected
+
+    Canon DIGITAL IXUS 80 IS:
+      Owner: Other
+      Content: Cambodia
+      Location: Collected
+
+    Canon DIGITAL IXUS 55:
+      Owner: Other
+      Content: FordLaser.com
+      Location: Collected
+      filters:
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            modified: 0
+            software:
+            quality: Fine
+
+    Canon EOS 60D:
+      Owner: Other
+      Content: QCMG group photo
+      Location: Collected
+
+    iPhone 6:
+      Notes: Ignore
+      Location: Collected
+
+    HERO4 Silver:
+      Owner: Matthew Anderson
+      Content: Travels
+      Action Steps: Check JEDI for duplicates
+      Location: GoPro
+
+    iPhone:
+      Owner: Matthew Anderson
+      Action Steps: Check Dropbox for duplicates
+      Notes: Ignore exports
+      Location: DropBox
+
+    iPhone 3G:
+      Owner: Matthew Anderson
+      Action Steps: Check Dropbox for duplicates
+      Notes: Ignore exports
+      Location: DropBox
+    
+    unknown:
+      # and file_path not like "%/n%.jpg"
+      # and file_path not like "%_n.jpg"
+      # and file_path not like "%_o.jpg"
+      # and file_path not like "%.__IGP%.PEF"
+      # and file_path not like "/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Thumbnails/%"
+      # and like "IMG_%.JPG" -- iPhone
+      Owner: Mixed, Me and Others
+      Notes: Majority appears to be from an iPhone
+      Location: Collected
