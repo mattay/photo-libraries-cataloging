@@ -210,11 +210,10 @@ class Clean:
                         paired_checksums[checksum].append(path)
                     else:
                         #  Solve by extentions -> checksums?
-                        # if ext in extentision:
-                        # e = extentision[ext] or {}
-                        # c = e[checksum] or []
-                        # c
-                        # e
+                        e = extentision.get(ext, {})
+                        c = e.get(checksum, [])
+                        e[checksum] = c
+                        extentision[ext] = e
                         extentision[ext][checksum].append(file)
 
             # NO - Checksum matched a paired

@@ -11,12 +11,10 @@ Usage:
     main.py --verbose
 
 Options:
-    -h --help			 Show this screen.
-    --version			 Show version.
-    --verbose			 Print more text
+    -h --help			  Show this screen.
+    --version			  Show version.
+    --verbose			  Print more text
     --sample
-    --collectstats
-    --filesearch
 """
 from docopt import docopt
 from typing import Any
@@ -41,6 +39,7 @@ from photologue.images import Images
 
 
 # Global access to libraries as a shared datasource
+VERSION = '0.5.1'
 LOGGER: Logger
 CONFIG: Any
 IMAGES: Any
@@ -227,8 +226,35 @@ def mapping() -> None:
     pass
 
 
-def handle_cmd(arguments) -> None:
-    global IMAGES, CONFIG
+def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
+    for arg in arguments.keys():
+        if arguments[arg] and arg in valid_options:
+            return arg
+
+    return None
+
+#
+# ==> Entry Point
+#
+
+
+def main():
+    global ABOUT
+    # Fetch versioning
+    # here = os.path.abspath(os.path.dirname(__file__))
+    # version = {}
+    # with open(os.path.join(here, '__version__.py')) as f:
+    #     exec(f.read(), version)
+    # ABOUT['__version__'] = '0.5.1' , version=ABOUT['__version__'], version=ABOUT['__version__']
+
+    # Handle args thanks to DocOpt
+    arguments = docopt(__doc__, version=ABOUT['__version__'])
+
+    ABOUT['verbose'] = arguments['--verbose']
+    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules'])
+    ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
+
+    setup()
 
     mode = ABOUT['mode']
     command = ABOUT['command']
@@ -245,38 +271,6 @@ def handle_cmd(arguments) -> None:
 
     # if command == 'mappings':
     # 	mapping()
-
-
-def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
-    for arg in arguments.keys():
-        if arguments[arg] and arg in valid_options:
-            return arg
-
-    return None
-
-#
-# ==> Entry Point
-#
-
-
-def main():
-    # Fetch versioning
-    here = os.path.abspath(os.path.dirname(__file__))
-    version = {}
-    with open(os.path.join(here, '__version__.py')) as f:
-        exec(f.read(), version)
-    ABOUT['__version__'] = version['__version__']
-
-    # Handle args thanks to DocOpt
-    arguments = docopt(__doc__, version=ABOUT['__version__'])
-
-    ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules'])
-    ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
-
-    setup()
-
-    handle_cmd(arguments)
 
 
 if __name__ == '__main__':
