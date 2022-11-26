@@ -150,7 +150,7 @@ rules(){
   echo "Processing Rules..."
   START=$(date +%s)
 
-  pipenv run python ./main.py rules
+  pipenv run python ./src/photologue/main.py rules
 
   END=$(date +%s)
   elapsed $START $END

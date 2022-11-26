@@ -16,3 +16,8 @@ Run the following SQL statement in SQLite to enable foreign keys needed to optim
 ```sql
 PRAGMA foreign_keys = ON;
 ```
+
+```bash
+pip install -e .
+pip install -r requirements_dev.txt
+```

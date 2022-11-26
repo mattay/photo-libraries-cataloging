@@ -1,21 +1,22 @@
 import logging
-from pprint import pprint
-from datetime import datetime
+# from pprint import pprint
+# from datetime import datetime
 import os
+
 
 class Clean:
     """For group of images, selected a perfred master"""
 
-    def __init__(self, 
-            preferred: dict = {'paths':  [], 'files': []}, 
-            ignore: dict = {'paths':  [], 'files': []},
-            camera_rules: dict = {},
-        ) -> None:
+    def __init__(self,
+                 preferred: dict = {'paths':  [], 'files': []},
+                 ignore: dict = {'paths':  [], 'files': []},
+                 camera_rules: dict = {},
+                 ) -> None:
         self.LOGGER = logging.getLogger('Clean')
-        self.camera_models = {}
+        self.camera_models: dict[str, dict] = {}
         self.camera_rules = camera_rules
-        self.preferred =  preferred
-        self.ignore = ignore 
+        self.preferred = preferred
+        self.ignore = ignore
 
     def add_camera_models(self, models: list):
         self.camera_models = {
@@ -24,14 +25,12 @@ class Clean:
             in models
         }
 
-
     def rules(self) -> dict:
         for camera in self.camera_models:
             if camera not in self.camera_rules:
                 self.LOGGER.warn(f'No rules defined yet for camera "{camera}"')
 
         return self.camera_models
-
 
     def collect_image_date_files(self, images: list[dict]) -> dict:
         """Organises files into a heiarchy of Images then date/time and files
@@ -46,16 +45,16 @@ class Clean:
             dict
                 heireacy {image: {moment: [files]}}
             """
-        collected = {}
+        collected: dict[str, dict] = {}
 
         for file in images:
             # Check if file shoule be ignored
-            if self.ignore_file(file['file_path']): 
-                break 
+            if self.ignore_file(file['file_path']):
+                break
 
             # clean up dates
-            file['image_date'] =  self.original_date(file['date_time_original'])
-            file['mod_date'] =  self.original_date(file['date_time_modifed'])
+            file['image_date'] = self.original_date(file['date_time_original'])
+            file['mod_date'] = self.original_date(file['date_time_modifed'])
             # Calculate if file has been modified
             file['modified'] = 1 if file['image_date'] != file['mod_date'] else 0
 
@@ -75,17 +74,17 @@ class Clean:
         if collected:
             clean_copies = 0
             dirty_copies = 0
-            ignored_copies = 0 
+            ignored_copies = 0
 
             for image, datetimes in collected.items():
                 for momment, files in datetimes.items():
                     # files = self.__pre_process(moment_files)
 
-                    # Get distinct extentions, checksums and 
+                    # Get distinct extentions, checksums and
                     checksums = set()
                     sizes = set()
                     extentions = set()
-                    grouped_checksum = {}
+                    grouped_checksum: dict[str, list] = {}
 
                     for f in files:
                         checksums.add(f.get('checksum'))
@@ -95,17 +94,17 @@ class Clean:
                         c = f.get('checksum')
                         g = grouped_checksum.get(c, [])
                         g.append(f)
-                        grouped_checksum[c] =  g
+                        grouped_checksum[c] = g
 
                     # Multiple Extentions -> Exports or RAW+
-                    if  len(extentions) > 1:
+                    if len(extentions) > 1:
                         dirty_copies += 1
-                        results.append(self.__mutiple_extentions(camera, image, extentions, files))
+                        results.extend(self.__mutiple_extentions(camera, image, extentions, files))
 
                     # Multiple checksums
                     elif len(checksums) > 1 or len(sizes) > 1:
                         dirty_copies += 1
-                        results.append(self.__multiple_checksums(camera, image, files))
+                        results.extend(self.__multiple_checksums(camera, image, files))
 
                     # Duplicates
                     elif files:
@@ -116,55 +115,50 @@ class Clean:
                         ignored_copies += 1
                         # FIXME:
                         self.LOGGER.warn(f'[process_camera_images] - Only Ignored Files For -> {camera} -> {image}')
-                 
 
             # Summary
             self.LOGGER.info("    ".join([
-                f'{camera:<26}', 
-                f'collected {len(collected):>5}', 
-                f'clean {clean_copies:>5}', 
+                f'{camera:<26}',
+                f'collected {len(collected):>5}',
+                f'clean {clean_copies:>5}',
                 f'dirty {dirty_copies:>5}',
                 f'ignored {ignored_copies:>5}'
             ]))
 
+    def __mutiple_extentions(self, camera: str, image: str, extentions: set, files: list) -> list[dict]:
 
-    def __mutiple_extentions(self, camera: str, image: str, extentions: set, files: list) -> list:
-        
         results = []
         # RAW+
-        if extentions in [ {'.RW2', '.JPG'}, {'.PEF', '.JPG'}, {'.DNG', '.JPG'}, {'.jpg', '.RW2', '.JPG'}]:
-            results = self.__dirty_RAW_plus(image, files) # FIXME: Return Value
+        if extentions in [{'.RW2', '.JPG'}, {'.PEF', '.JPG'}, {'.DNG', '.JPG'}, {'.jpg', '.RW2', '.JPG'}]:
+            results.extend(self.__dirty_RAW_plus(image, files))  # FIXME: Return Value
 
         else:
             filtered_files = self.__filter_camera_files(camera, 'extentions', extentions, files)
-            
+
             if extentions in [{'.jpg', '.RW2', '.JPG'}]:
-                results = self.__dirty_RAW_plus(image, filtered_files) # FIXME: Return Value
+                results.extend(self.__dirty_RAW_plus(image, filtered_files))  # FIXME: Return Value
             else:
                 if camera == 'DMC-LX3':
-                    results.append(self.__tagged_copies(image, filtered_files)) # FIXME: Return Value
-
+                    results.append(self.__tagged_copies(image, filtered_files))  # FIXME: Return Value
 
         return results
 
-    def __multiple_checksums(self, camera: str, image: str, files: list) -> list:
+    def __multiple_checksums(self, camera: str, image: str, files: list) -> list[dict]:
         results = []
-        filtered_files = self.__filter_camera_files(camera, 'checksums', None , files)
-        results.append(self.__tagged_copies(image, filtered_files)) # FIXME: Return Value
-        
+        filtered_files = self.__filter_camera_files(camera, 'checksums', None, files)
+        results.append(self.__tagged_copies(image, filtered_files))  # FIXME: Return Value
+
         return results
 
-
-    def __clean_images(self, files: list) -> dict:
+    def __clean_images(self, files: list) -> dict[str, str | list]:
         return self.__master_and_copies(files)
-         
-      
+
     def __dirty_RAW_plus(self, image: str, files: list) -> list:
-        results = []
-        paths = {}
+        results: list[dict] = []
+        paths: dict[str, dict] = {}
         paired = {}
         singles = {}
-        
+
         # Looking for raw files with matching jpeg file in same directory
         for f in files:
             dir = os.path.dirname(f['file_path'])
@@ -178,11 +172,11 @@ class Clean:
                 paired[path] = ext
             else:
                 singles[path] = ext
-                 
+
         if paired:
-            checksums = self.__raw_plus_checksums (paired)
+            checksums = self.__raw_plus_checksums(paired)
             raw = checksums['raw']
-            jpg = checksums['jpg'] 
+            jpg = checksums['jpg']
 
             if len(raw) == 1 and len(jpg) == 1:
                 results.append(self.__clean_images(list(raw.values())[0]))
@@ -198,13 +192,13 @@ class Clean:
         # Called after Paired to be able to match to paired
         if singles:
             # Index checksums to copies
-            paired_checksums = {}
+            paired_checksums: dict = {}
             for r in results:
                 for f in files:
                     if f['file_path'] == r['master']:
                         paired_checksums[f['checksum']] = r['copies']
 
-            extentision = {}
+            extentision: dict[str, dict] = {}
             # YES - Checksum matched a paired
             for single in singles.values():
                 for file in single.values():
@@ -218,9 +212,9 @@ class Clean:
                         #  Solve by extentions -> checksums?
                         e = extentision.get(ext, {})
                         c = e.get(checksum, [])
-                        c.append(file)
                         e[checksum] = c
                         extentision[ext] = e
+                        extentision[ext][checksum].append(file)
 
             # NO - Checksum matched a paired
             if extentision:
@@ -228,6 +222,8 @@ class Clean:
                 for ext, checksums in extentision.items():
                     if len(checksums.keys()) == 1:
                         for checksum, file_list in checksums.items():
+                            # print(type(file_list))
+                            # pprint(file_list)
                             results.append(self.__master_and_copies(file_list))
                     else:
                         self.LOGGER.error(f'[RAW+] -> Expected only a single checksums for extention {ext} of {list(extentision.keys())}  for {image}')
@@ -236,14 +232,14 @@ class Clean:
 
         if not singles and not paired:
             self.LOGGER.error('[RAW+] -> Expeced Singels or Paired, Neither found for {image}')
-                
+
         return results
 
-    def __tagged_copies(self, image, files: list,) -> dict:
-        results = {} 
-        tagged_copies = [] # FIXME:
-        by_checksums = self.__group_by_checksum(files)      
-        
+    def __tagged_copies(self, image, files: list,) -> dict[str, str | list]:
+        results = {}
+        # tagged_copies = [] # FIXME:
+        by_checksums = self.__group_by_checksum(files)
+
         if not by_checksums:
             self.LOGGER.warn(f'[Tagged Copies] - including "has_copy_in_subfix" for {image}')
             by_checksums = self.__group_by_checksum(files)
@@ -260,20 +256,19 @@ class Clean:
 
         else:
             self.LOGGER.error(f'[Tagged Copies] - No checksums for {image}')
-            self.__list_files('Tagged Copies', tagged_copies)
+            # self.__list_files('Tagged Copies', tagged_copies)
 
             # TODO:
-            
 
         return results
 
     # def __filter_out_tag(self, files: list, filter_out_tag: str='') -> dict())
 
-    def __group_by_checksum(self, files: list, filter_out_tag: str='') -> dict:
-        results = {}
-        for file in files: 
+    def __group_by_checksum(self, files: list, filter_out_tag: str = '') -> dict[str, list]:
+        results: dict[str, list] = {}
+        for file in files:
             if filter_out_tag and file[filter_out_tag]:
-                # Will add to copies if only a single checksum exists 
+                # Will add to copies if only a single checksum exists
                 break
             else:
                 checksum = file['checksum']
@@ -283,9 +278,9 @@ class Clean:
 
         return results
 
-    def __master_and_copies(self, files: list) -> dict:
-        image_master_file = None
-        image_copies = []
+    def __master_and_copies(self, files: list) -> dict[str, str | list]:
+        image_master_file: str = ''
+        image_copies: list[str] = []
 
         if len(files) == 1:
             f = files[0]
@@ -295,25 +290,25 @@ class Clean:
             image_master_file = self.__prefered_master(files)
 
             #  Exclude Master
-            image_copies = [ f['file_path']
-                for f 
-                in files 
-                if f['file_path'] != image_master_file
-            ]
-        
+            image_copies = [f['file_path']
+                            for f
+                            in files
+                            if f['file_path'] != image_master_file
+                            ]
+
         return {
             'master': image_master_file,
             'copies': image_copies
         }
 
-    def __prefered_master(self, files: list) -> str|None:
+    def __prefered_master(self, files: list) -> str:
         """Identify a master image file"""
-        image_master_file = None
+        image_master_file = ''
 
         for preferred in self.preferred['paths']:
             if image_master_file:
                 break
-            
+
             for f in files:
                 # preferred_rules = {}
                 path = f['file_path']
@@ -336,9 +331,9 @@ class Clean:
 
         return image_master_file
 
-    def __raw_plus_checksums (self, paired: dict) -> dict:
-        r_checksums = {}
-        j_checksums = {}
+    def __raw_plus_checksums(self, paired: dict) -> dict[str, dict]:
+        r_checksums: dict[str, list] = {}
+        j_checksums: dict[str, list] = {}
 
         # Pair RAW+ files
         for p, e in paired.items():
@@ -351,7 +346,7 @@ class Clean:
             else:
                 r = exts[0]
                 j = exts[1]
-            
+
             rf = paired[p][r]
             jf = paired[p][j]
             rc = r_checksums.get(rf['checksum'], [])
@@ -362,23 +357,22 @@ class Clean:
             j_checksums[jf['checksum']] = jc
 
         return {
-            'raw': r_checksums, 
+            'raw': r_checksums,
             'jpg': j_checksums
         }
-
 
     def __filter_camera_files(self, camera, condition, matches, files) -> list:
         rules = []
         results = []
 
         if camera not in self.camera_rules:
-            self.LOGGER.error(f'[Configuration] - Camera not found in "cleanup.camera_rules"')
+            self.LOGGER.error('[Configuration] - Camera not found in "cleanup.camera_rules"')
         else:
             # collect Rules
             for filter in self.camera_rules[camera].get('filters', []):
                 if filter['condition'] == condition and filter['matches'] == matches:
                     rules.append(filter)
-        
+
         if not rules:
             return files
 
@@ -399,7 +393,7 @@ class Clean:
             #  Only keep the from the first rule thats true
             if files_kept:
                 break
-        
+
         if not files_kept:
             files_ignored = []
             # Remove any ignore rules instead
@@ -418,15 +412,15 @@ class Clean:
                     results.append(f)
         else:
             results = files_kept
-        
+
         if not results:
-            self.LOGGER.error(f'[Filter Camera File] - No Results')
+            self.LOGGER.error('[Filter Camera File] - No Results')
             # pprint(rules)
             # self.__list_files('[filter_camera_file]', files)
             # exit()
             # else:
             #     self.LOGGER.info(f"Ignored {f['file_path']}")
-        
+
         # if camera == 'QSS':
         #     pprint(rules)
         #     # pprint(results)
@@ -434,7 +428,7 @@ class Clean:
 
         return results
 
-    def original_date(self, date_time_original:str) -> object:
+    def original_date(self, date_time_original: str) -> object:
         date = '    :  :  '
         if date_time_original == '-':
             pass
@@ -443,7 +437,6 @@ class Clean:
         elif date_time_original:
             date = date_time_original[:10]
         return date
-
 
     def ignore_file(self, file_path: dict) -> bool:
         ignore = False
@@ -456,18 +449,17 @@ class Clean:
                     self.LOGGER.info(f'Ignored file >> {file_path}')
                     ignore = True
 
-        return ignore 
-
+        return ignore
 
     def __list_files(self, group: str, files: list):
         print(group)
-        print(f"  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  COLOURSPACE  FILE PATH")
-        print(f"  ---------- ---------- - ------------ - ---------------- -------- ------------ ------------------------------------------------")
-        [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['has_copy_in_subfix']} {str(file['software']):<16} {str(file['quality']):<8} {str(file['color_space']):<12} {file['file_path']}")
-            for file 
+        print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  COLOURSPACE  FILE PATH")
+        print("  ---------- ---------- - ------------ - ---------------- -------- ------------ ------------------------------------------------")
+        [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['has_copy_in_subfix']}" +
+               f" {str(file['software']):<16} {str(file['quality']):<8} {str(file['color_space']):<12} {file['file_path']}")
+            for file
             in sorted(files, key=lambda d: d['checksum'])
-        ]
-
+         ]
 
 
 # {'-': {},
