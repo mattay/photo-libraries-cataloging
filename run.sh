@@ -1,5 +1,7 @@
 #!/bin/bash
 
+APP=./src/photologue/main.py
+
 elapsed () {
   start=$1
   end=$2
@@ -89,9 +91,9 @@ collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
   
-  pipenv run python ./main.py missing stats --print0 \
+  pipenv run python ${APP} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
-  | pipenv run python ./main.py collect stats
+  | pipenv run python ${APP} collect stats
 
   END=$(date +%s)
   elapsed $START $END
@@ -103,7 +105,7 @@ collect_exif() {
   echo "Collecting exifs..."
   START=$(date +%s)
 
-  pipenv run python ./main.py missing exifs \
+  pipenv run python ${APP} missing exifs \
   | exiftool -@ - -T \
   -DateTimeOriginal \
   -FileModifyDate \
@@ -118,7 +120,7 @@ collect_exif() {
   -ImageWidth \
   -Software \
   -filepath \
-  | pipenv run python ./main.py collect exifs
+  | pipenv run python ${APP} collect exifs
 
   END=$(date +%s)
   elapsed $START $END
@@ -130,23 +132,23 @@ collect_checksums() {
   echo "Collecting checksums..."
   START=$(date +%s)
 
-  pipenv run python ./main.py missing checksums --print0 \
+  pipenv run python ${APP} missing checksums --print0 \
   | xargs -0 cksum \
-  | pipenv run python ./main.py collect checksums
+  | pipenv run python ${APP} collect checksums
 
   END=$(date +%s)
   elapsed $START $END
 }
 
 
-collect() {
+command_collect() {
   collect_stats
   collect_exif
   collect_checksums
 }
 
 
-rules(){
+command_rules(){
   echo "Processing Rules..."
   START=$(date +%s)
 
@@ -162,23 +164,81 @@ profile_rules(){
   snakeviz ${file_profiled}
 }
 
-# find_in_paths
-# collect
-rules
-# profile_rules
 
-# -exec stat {} +
+cleanup_logs() {
+  find ./logs -name "*.log" -delete
+}
 
 
-# --- Find Files ---
-# pipenv run python ./main.py search --filesearch
-# --- Collect File stats and Library information ---
-# pipenv run python ./main.py search --collectstats
-# pipenv run python ./main.py --version
-# pipenv run python ./main.py copies
-# pipenv run python ./main.py duplicates
-# pipenv run python ./main.py libraries
-# Output a list of mappings for use in observable.
-# pipenv run python ./main.py mappings
-# pipenv run python ./main.py clean --thumbnails
-# cat info.log
+command_cleanup  () {
+  cleanup_logs
+}
+
+
+command_lint() {
+  SRC=src
+
+  echo "mypy"
+  pipenv run mypy ${SRC}
+
+  echo "flake8"
+  pipenv run flake8 ${SRC}
+}
+
+
+command_test() {
+  echo "pytest"
+  pipenv run pytest  
+}
+
+
+main_help() {
+  echo "run.sh <COMMAND>"
+  echo ""
+  echo "COMMAND"
+  echo $'\tcollect'
+  echo $'\tprocess'
+  echo $'\tlint'
+  echo $'\ttest'
+  echo $'\tcleanup'
+}
+
+
+main() {
+  COMMAND=$1
+
+  if [[ $COMMAND == "collect" ]]
+  then
+    command_collect
+  
+  elif [[ $COMMAND == "process" ]]
+  then
+    command_rules
+
+  elif [[ $COMMAND == "lint" ]]
+  then
+    command_lint
+  
+  elif [[ $COMMAND == "test" ]]
+  then
+    command_test
+
+  elif [[ $COMMAND == "cleanup" ]]
+  then
+    command_cleanup
+
+  else
+    main_help
+  fi
+
+}
+
+
+COMMAND=$1
+if [[ ! -z "$COMMAND" ]]
+then
+  main $COMMAND
+else
+  main_help
+fi
+

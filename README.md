@@ -8,7 +8,7 @@ Using Homebrew we'll install:
 - sqlite
 
 ```bash
-./setup.sh
+brew install ExifTool sqlite
 ```
 
 ### Enabling Foreign Key Support
@@ -17,7 +17,22 @@ Run the following SQL statement in SQLite to enable foreign keys needed to optim
 PRAGMA foreign_keys = ON;
 ```
 
+### Python setup
 ```bash
-pip install -e .
-pip install -r requirements_dev.txt
+pipenv install -e .
+pipenv install -r requirements_dev.txt
 ```
+
+## Running 
+```bash
+./run
+```
+
+## Notes
+Might need to remove
+- file_path like "%/n%.jpg"
+- file_path like "%_n.jpg"
+- file_path like "%_o.jpg"
+- file_path like "%.__IGP%.PEF"
+- file_path like "/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Thumbnails/%"
+- like "IMG_%.JPG" -- iPhone
