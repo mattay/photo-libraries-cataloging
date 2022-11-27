@@ -45,38 +45,36 @@ CONFIG: Any
 IMAGES: Any
 
 ABOUT = {
-    '__version__': '0.0.0',
+    '__version__': '0.5.2',
     'command': None,
     'mode': None
-}
-
-PATHS = {
-    'config': 'configuration/config.yml',
-    'logging': 'configuration/logging.ini',
-    'mapping': 'reports'
 }
 
 
 def setup() -> None:
     global LOGGER, CONFIG, IMAGES
 
-    config_yml = PATHS['config']
-    logger_ini = PATHS['logging']
+    config_yml = os.environ.get('CONFIG_FILE_YML', 'config.yml')
+    logger_ini = os.environ.get('LOGGING_CONFIG_INI', 'logging.ini')
+    indexing_cabinate = os.environ.get('DATABASE_URL', 'catalogue/catalogue.db')
 
     # Logging
     if not os.path.exists(logger_ini):
         print(f'Logging config file does not exist: {logger_ini}')
         exit()
     else:
+        path = os.environ.get('LOGGING_OUTPUT_PATH', 'logs').rstrip('/')
         date = datetime.now().strftime('%Y:%m:%d_%H:%M:%S')
         command = f"{ABOUT['command']}"
-        if ABOUT['mode']:
-            command = f"{command}__{ABOUT['mode']}"
+        mode = ABOUT['mode']
+        if mode:
+            command = f"{command}__{mode}"
 
-        fileConfig(logger_ini, defaults={'date': date, 'command': command})
+        fileConfig(logger_ini, defaults={'path': path, 'date': date, 'command': command})
         LOGGER = getLogger()
         LOGGER.info(f"Version: {ABOUT['__version__']}")
         LOGGER.info(f"Command: {command}")
+        LOGGER.info(f"Mode: {mode}")
 
     # Configuration
     if not os.path.exists(config_yml):
@@ -88,7 +86,7 @@ def setup() -> None:
             LOGGER.info(f'Loading configuration file successful - {config_yml}')
 
     # Check config for expected values
-    for v in ['indexing_cabinate', 'import', 'cleanup', 'raw_extentions']:
+    for v in ['import', 'cleanup', 'raw_extentions']:
         config_okay = True
         if v not in CONFIG:
             config_okay = False
@@ -101,9 +99,13 @@ def setup() -> None:
     # Progress Bar
     # alive_progress.config_handler.set_global(title_length=48)
 
+    if not indexing_cabinate:
+        LOGGER.error('Enviroment variable not defined: "DATABASE_URL"')
+        exit()
+
     # Images class
     IMAGES = Images(
-        CONFIG.get('indexing_cabinate'),
+        indexing_cabinate,
         CONFIG.get('import').get('raw_extentions'),
         CONFIG.get('cleanup')
     )
@@ -269,8 +271,8 @@ def main():
     if command == 'rules':
         rules()
 
-    # if command == 'mappings':
-    # 	mapping()
+    if command == 'mappings':
+        mapping()
 
 
 if __name__ == '__main__':

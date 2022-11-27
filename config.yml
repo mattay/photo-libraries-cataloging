@@ -1,4 +1,3 @@
-indexing_cabinate: ./catalogue
 import:
   volumes:
     Jedi:
@@ -163,14 +162,7 @@ cleanup:
             modified: 0
             quality: RAW
             software: K-5 Ver 1.14 
-        # Checksums -- 
-        # - condition: checksums
-        #   matches:
-        #   action: keep
-        #   file_props:
-            # file_extention: .JPG
-            # modified: 0
-            # software: Ver.1.2
+
     DMC-LX3:
       Owner: Matthew Anderson
       Location: Keep
@@ -418,12 +410,6 @@ cleanup:
       Location: DropBox
     
     unknown:
-      # and file_path not like "%/n%.jpg"
-      # and file_path not like "%_n.jpg"
-      # and file_path not like "%_o.jpg"
-      # and file_path not like "%.__IGP%.PEF"
-      # and file_path not like "/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Thumbnails/%"
-      # and like "IMG_%.JPG" -- iPhone
       Owner: Mixed, Me and Others
       Notes: Majority appears to be from an iPhone
       Location: Collected

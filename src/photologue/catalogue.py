@@ -12,7 +12,7 @@ class Catalogue:
 
     def __init__(self, indexing_cabinate):
         self.logger = logging.getLogger('Catalogue')
-        self.conn = sqlite3.connect(indexing_cabinate+'/catalogue.db')
+        self.conn = sqlite3.connect(indexing_cabinate)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
 
@@ -139,9 +139,11 @@ class Catalogue:
         self.save()
 
     def __add(self, query: str, data) -> None:
+        # TODO:
         try:
-            self.cur.execute(query, data)
-            self.cur.execute('COMMIT')
+            with self.conn:
+                self.conn.execute(query, data)
+                # self.cur.execute('COMMIT')
 
         except sqlite3.Warning as w:
             self.logger.warn("Warning occurred: ", w)
@@ -154,11 +156,12 @@ class Catalogue:
 
     def __request_list(self, query: str, args: Optional[Any] = None) -> list[str]:
         try:
-            if args:
-                self.cur.execute(query, args)
-            else:
-                self.cur.execute(query)
-            return [x[0] for x in self.cur.fetchall()]
+            with self.conn:
+                if args:
+                    self.conn.execute(query, args)
+                else:
+                    self.conn.execute(query)
+                return [x[0] for x in self.cur.fetchall()]
 
         except sqlite3.Warning as w:
             self.logger.warn("Warning occurred: ", w)
@@ -172,11 +175,12 @@ class Catalogue:
 
     def __request_results(self, query: str, args: Optional[Any] = None) -> list[dict]:
         try:
-            if args:
-                self.cur.execute(query, args)
-            else:
-                self.cur.execute(query)
-            return [dict(row) for row in self.cur.fetchall()]
+            with self.conn:
+                if args:
+                    self.conn.execute(query, args)
+                else:
+                    self.conn.execute(query)
+                return [dict(row) for row in self.cur.fetchall()]
 
         except sqlite3.Warning as w:
             self.logger.warn("Warning occurred: ", w)
