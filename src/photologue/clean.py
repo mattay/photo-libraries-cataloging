@@ -52,14 +52,28 @@ class Clean:
                     # Multiple Extentions -> Exports or RAW+
                     if len(extentions) > 1:
                         dirty_copies += 1
-                        # TODO:
-                        # results.extend(self.__mutiple_extentions(camera, image, extentions, files))
+                        for m in self.__mutiple_extentions(camera, image, extentions, files):
+                            r = {
+                                **m,
+                                'camera': camera,
+                                'image': image,
+                                'momment': momment,
+                            }
+                            results.append(r)
 
                     # Multiple checksums
                     elif len(checksums) > 1 or len(sizes) > 1:
                         dirty_copies += 1
                         # TODO:
                         # results.extend(self.__multiple_checksums(camera, image, files))
+                        for m in self.__multiple_checksums(camera, image, files):
+                            r = {
+                                **m,
+                                'camera': camera,
+                                'image': image,
+                                'momment': momment,
+                            }
+                            results.append(r)
 
                     # Duplicates
                     elif files:
@@ -159,12 +173,6 @@ class Clean:
         paired = {}
         singles = {}
 
-        # for f in files:
-        #     dir = os.path.dirname(f['file_path'])
-        #     d = paths.get(dir, {})
-        #     d[f.get('file_extention')] = f
-        #     paths[dir] = d
-
         # Seperate paired and single
         for path, ext in paths.items():
             if len(ext.keys()) == 2:
@@ -183,11 +191,7 @@ class Clean:
 
             else:
                 self.LOGGER.error('[RAW+] -> Paired have multiple checksums for {image}')
-                # print("\t RAW")
-                # pprint(raw)
-                # print("\t JPG")
-                # pprint(jpg)
-
+ 
         # Called after Paired to be able to match to paired
         if singles:
             # Index checksums to copies
@@ -294,25 +298,16 @@ class Clean:
                 break
 
             for f in files:
-                # preferred_rules = {}
                 path = f['file_path']
 
                 if preferred in path:
                     image_master_file = path
-                    # if 'path'in preferred_rules:
-                    #     preferred_rules['path'].append(path)
-                    # else:
-                    #     preferred_rules['path'] = [path]
                     break
-
-                # f['preferred_rules'] = preferred_rules
 
         if not image_master_file:
             self.LOGGER.error(f'[Prefered Master] - No master file identified')
             list_files('Prefered Master', files)
             pass
-            # 
-            # exit()
 
         return image_master_file
 
@@ -334,8 +329,6 @@ class Clean:
         files_kept = []
         for rule in rules:
             if rule['action'] == 'keep':
-                # if camera == 'QSS':
-                #     print('QSS')
                 for f in files:
                     rule_holds = True
                     for key, value in rule['file_props'].items():
@@ -375,11 +368,6 @@ class Clean:
             # exit()
             # else:
             #     self.LOGGER.info(f"Ignored {f['file_path']}")
-
-        # if camera == 'QSS':
-        #     pprint(rules)
-        #     # pprint(results)
-        #     exit()
 
         return results
 

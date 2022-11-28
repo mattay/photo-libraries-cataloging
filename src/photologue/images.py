@@ -110,13 +110,22 @@ class Images:
         for camera in self.CATALOGUE.cameras():
             processed = self.CLEAN.process_camera_images(camera, self.CATALOGUE.camera_files(camera))
             for p in processed:
-                if 'master' not in p or not p['master']:
-                    # self.LOGGER.warn(f'Master not Found {camera}')
-                    # pprint(p)
-                    pass
-                elif len(p['copies']) >= 1:
+                if 'master' in p and p['master'] and len(p['copies']) >= 1:
                     for c in p['copies']:
                         self.CATALOGUE.add_relationship(c, 'copy', p['master'])
-                else:
+                elif p['momment'] and p['image']:
+                    # print(p['master']) TODO: what do we do with just masters
                     pass
-                    # pprint(p)
+                elif 'momment' not in p:
+                    self.LOGGER.warn(f"Moment not found for {p['image']}")
+                    pprint(p, width=256)
+                elif 'master' not in p or not p['master']:
+                    # self.LOGGER.warn(f"Master not Found {camera}, {p['momment']}, {p['image']}")
+                    # pprint(p, width=256)
+                    pass
+                else:
+                    self.LOGGER.warn(f"WHAT A MESS {p['camera']}, {p['momment']}, {p['image']}")
+                    # pprint(p, width=256)
+                    # exit()
+                    # pass
+                    
