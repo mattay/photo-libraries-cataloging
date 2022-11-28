@@ -2,7 +2,7 @@ import pytest
 from photologue.files import clean_name
 
 
-@pytest.mark.parametrize("test_file_paths, expected_image_name", [
+@pytest.mark.parametrize("test__file_paths, expected_image_name", [
     ('/Volumes/Jedi/CLEANUP//Cars/2010/03/13/20100313-083911/IMG_1740 (1).jpg', {
         'name': 'IMG_1740',
         'path': '/Volumes/Jedi/CLEANUP//Cars/2010/03/13/20100313-083911/IMG_1740 (1).jpg',
@@ -13,5 +13,5 @@ from photologue.files import clean_name
         'face': False
     })
 ])
-def test_clean_name(test_file_paths, expected_image_name):
-    assert clean_name(test_file_paths) == expected_image_name
+def test__clean_name(test__file_paths, expected_image_name):
+    assert clean_name(test__file_paths) == expected_image_name

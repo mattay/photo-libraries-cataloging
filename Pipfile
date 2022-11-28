@@ -16,6 +16,8 @@ pytest = "==7.2.0"
 pytest-cov = "==4.0.0"
 snakeviz = "==2.1.1"
 tox = "==3.27.1"
+pytest-watch = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.10"
