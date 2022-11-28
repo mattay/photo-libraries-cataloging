@@ -1,7 +1,6 @@
 from typing import Any, Optional
 # from pprint import pprint
 import logging
-# import re
 import sqlite3
 
 
@@ -84,7 +83,7 @@ class Catalogue:
                     camera_model text,
                     quality text,
                     x_resolution int,
-                  y_resolution int,
+                    y_resolution int,
                     image_height int,
                     image_width int,
                     resolution_unit text,
@@ -142,7 +141,7 @@ class Catalogue:
         # TODO:
         try:
             with self.conn:
-                self.conn.execute(query, data)
+                self.cur.execute(query, data)
                 # self.cur.execute('COMMIT')
 
         except sqlite3.Warning as w:
@@ -152,15 +151,14 @@ class Catalogue:
         except sqlite3.Error as e:
             self.logger.error("Error occurred: ", e)
             self.logger.error("Query: ", query)
-            exit()
+            exit(1)
 
     def __request_list(self, query: str, args: Optional[Any] = None) -> list[str]:
         try:
-            with self.conn:
-                if args:
-                    self.conn.execute(query, args)
-                else:
-                    self.conn.execute(query)
+            if args:
+                self.cur.execute(query, args)
+            else:
+                self.cur.execute(query)
                 return [x[0] for x in self.cur.fetchall()]
 
         except sqlite3.Warning as w:
@@ -170,17 +168,16 @@ class Catalogue:
         except sqlite3.Error as e:
             self.logger.error("Error occurred: ", e)
             self.logger.error("Query: ", query)
-            exit()
+            exit(1)
         return []
 
     def __request_results(self, query: str, args: Optional[Any] = None) -> list[dict]:
         try:
-            with self.conn:
-                if args:
-                    self.conn.execute(query, args)
-                else:
-                    self.conn.execute(query)
-                return [dict(row) for row in self.cur.fetchall()]
+            if args:
+                self.cur.execute(query, args)
+            else:
+                self.cur.execute(query)
+            return [dict(row) for row in self.cur.fetchall()]
 
         except sqlite3.Warning as w:
             self.logger.warn("Warning occurred: ", w)
@@ -189,7 +186,7 @@ class Catalogue:
         except sqlite3.Error as e:
             self.logger.error("Error occurred: ", e)
             self.logger.error("Query: ", query)
-            exit()
+            exit(1)
         return []
 
     #
@@ -314,7 +311,7 @@ class Catalogue:
         except sqlite3.Error as e:
             self.logger.error("Error occurred: ", e)
             self.logger.error("Query: ", 'COMMIT')
-            exit()
+            exit(1)
 
     #
     # Requests
@@ -324,9 +321,6 @@ class Catalogue:
         query = """--sql
             SELECT DISTINCT f.file_name
             FROM file f
-            # WHERE f.file_name NOT LIKE '.%'
-            # AND f.file_path NOT LIKE "%/resources/%"
-            # AND f.file_path NOT LIKE "%/Previews/%"
             ORDER BY file_name;
             """
         return self.__request_list(query)
@@ -345,8 +339,6 @@ class Catalogue:
             FROM file f
             LEFT JOIN "library" l ON f.file_path = l.file_path
             WHERE f.file_name = ?
-            # AND f.file_path NOT LIKE "%/resources/%"
-            # AND f.file_path NOT LIKE "%/Previews/%"
         ;"""
         return self.__request_results(query, (image,))
 
@@ -413,25 +405,3 @@ class Catalogue:
                 LEFT JOIN "library" l on l.file_path = f.file_path
         ;"""
         return self.__request_results(query, (camera,))
-
-    def libraries(self) -> list[dict]:
-        query = """--sql
-            SELECT library_name, library_type, library_path, count(file_path) AS images
-            FROM "library"
-            WHERE library_name is not NULL
-            GROUP BY library_path
-            ORDER by images DESC
-            ;
-        """
-        return self.__request_results(query)
-
-    def library_path_files(self, library_path: str) -> list[dict]:
-        query = """ --sql
-            SELECT f.file_name, f.file_path, f.checksum, f.size
-            FROM "library" l
-            JOIN "file" f ON l.file_path = f.file_path
-            WHERE library_path = ?
-            AND is_master
-            ORDER BY f.file_name;
-        """
-        return self.__request_results(query, (library_path,))
