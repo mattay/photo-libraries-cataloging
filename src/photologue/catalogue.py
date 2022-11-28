@@ -106,7 +106,8 @@ class Catalogue:
                 is_a text,
                 of_file_path text,
                 FOREIGN KEY(file_path) REFERENCES file(file_path) ON DELETE CASCADE,
-                FOREIGN KEY(of_file_path) REFERENCES file(file_path) ON DELETE CASCADE
+                FOREIGN KEY(of_file_path) REFERENCES file(file_path) ON DELETE CASCADE,
+                UNIQUE(file_path, is_a, of_file_path)
             );
         ''')
 
@@ -312,6 +313,19 @@ class Catalogue:
             self.logger.error("Error occurred: ", e)
             self.logger.error("Query: ", 'COMMIT')
             exit(1)
+
+    def add_relationship(self, file_path: str, is_a: str, of_file_path: str) -> None:
+        query = """--sql
+            INSERT OR IGNORE INTO realationships
+            (
+                file_path, is_a, of_file_path
+            )
+            VALUES (?, ?, ?);
+        """
+        data = (
+            file_path, is_a, of_file_path
+        )
+        self.__add(query, data)
 
     #
     # Requests
