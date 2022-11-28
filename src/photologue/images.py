@@ -106,15 +106,6 @@ class Images:
     def add_exif(self, image_path: str, exif: dict) -> None:
         self.CATALOGUE.add_exif(image_path, exif)
 
-    def save(self) -> None:
-        self.CATALOGUE.save()
-
-    def cameras(self) -> dict:
-        self.CLEAN.add_camera_models(self.CATALOGUE.cameras())
-
-        return self.CLEAN.rules()
-
     def process_images(self) -> None:
         for camera in self.CATALOGUE.cameras():
-            self.CLEAN.add_camera_models(self.CATALOGUE.cameras())
             self.CLEAN.process_camera_images(camera, self.CATALOGUE.camera_files(camera))
