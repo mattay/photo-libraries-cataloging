@@ -61,7 +61,7 @@ def setup() -> None:
     # Logging
     if not os.path.exists(logger_ini):
         print(f'Logging config file does not exist: {logger_ini}')
-        exit()
+        exit(1)
     else:
         path = os.environ.get('LOGGING_OUTPUT_PATH', 'logs').rstrip('/')
         date = datetime.now().strftime('%Y:%m:%d_%H:%M:%S')
@@ -79,7 +79,7 @@ def setup() -> None:
     # Configuration
     if not os.path.exists(config_yml):
         LOGGER.error(f'Config file does not exist: {config_yml}')
-        exit()
+        exit(1)
     else:
         with open(config_yml, "r") as yamlfile:
             CONFIG = yaml.load(yamlfile, Loader=yaml.FullLoader)
@@ -94,14 +94,14 @@ def setup() -> None:
 
         if not config_okay:
             LOGGER.error(f'EXITING - Configuration file missing properties! - {config_yml}')
-            exit()
+            exit(1)
 
     # Progress Bar
     # alive_progress.config_handler.set_global(title_length=48)
 
     if not indexing_cabinate:
         LOGGER.error('Enviroment variable not defined: "DATABASE_URL"')
-        exit()
+        exit(1)
 
     # Images class
     IMAGES = Images(
