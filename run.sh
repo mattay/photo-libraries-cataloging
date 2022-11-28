@@ -1,6 +1,7 @@
 #!/bin/bash
 
-APP=./src/photologue/main.py
+APP_MAIN=./src/photologue/main.py
+APP_CONFIG=./src/photologue/config.py
 
 elapsed () {
   start=$1
@@ -56,7 +57,7 @@ find_in_paths() {
   local IFS=$'\n'
 
   echo 'Fetching Paths'
-  PATHS=$(pipenv run python ./config.py paths)
+  PATHS=$(pipenv run python ${APP_CONFIG} paths)
 
   # echo 'Fetching extentions'
   # EXTENTIONS=$(pipenv run python ./config.py extentions)
@@ -91,9 +92,9 @@ collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
   
-  pipenv run python ${APP} missing stats --print0 \
+  pipenv run python ${APP_MAIN} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
-  | pipenv run python ${APP} collect stats
+  | pipenv run python ${APP_MAIN} collect stats
 
   END=$(date +%s)
   elapsed $START $END
@@ -105,7 +106,7 @@ collect_exif() {
   echo "Collecting exifs..."
   START=$(date +%s)
 
-  pipenv run python ${APP} missing exifs \
+  pipenv run python ${APP_MAIN} missing exifs \
   | exiftool -@ - -T \
   -DateTimeOriginal \
   -FileModifyDate \
@@ -120,7 +121,7 @@ collect_exif() {
   -ImageWidth \
   -Software \
   -filepath \
-  | pipenv run python ${APP} collect exifs
+  | pipenv run python ${APP_MAIN} collect exifs
 
   END=$(date +%s)
   elapsed $START $END
@@ -132,9 +133,9 @@ collect_checksums() {
   echo "Collecting checksums..."
   START=$(date +%s)
 
-  pipenv run python ${APP} missing checksums --print0 \
+  pipenv run python ${APP_MAIN} missing checksums --print0 \
   | xargs -0 cksum \
-  | pipenv run python ${APP} collect checksums
+  | pipenv run python ${APP_MAIN} collect checksums
 
   END=$(date +%s)
   elapsed $START $END

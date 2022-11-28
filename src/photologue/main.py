@@ -19,7 +19,6 @@ Options:
 from docopt import docopt
 from typing import Any
 
-# from configparser import ConfigParser
 import os
 import sys
 # from pprint import pprint
@@ -31,8 +30,6 @@ from logging import Logger, getLogger
 from logging.config import fileConfig
 import yaml
 
-# Progress bar
-# import alive_progress
 
 # Application libs
 from photologue.images import Images
@@ -43,7 +40,6 @@ VERSION = '0.5.1'
 LOGGER: Logger
 CONFIG: Any
 IMAGES: Any
-
 ABOUT = {
     '__version__': '0.5.2',
     'command': None,
@@ -96,9 +92,7 @@ def setup() -> None:
             LOGGER.error(f'EXITING - Configuration file missing properties! - {config_yml}')
             exit(1)
 
-    # Progress Bar
-    # alive_progress.config_handler.set_global(title_length=48)
-
+    # Checking for database path
     if not indexing_cabinate:
         LOGGER.error('Enviroment variable not defined: "DATABASE_URL"')
         exit(1)
@@ -242,13 +236,7 @@ def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
 
 def main():
     global ABOUT
-    # Fetch versioning
-    # here = os.path.abspath(os.path.dirname(__file__))
-    # version = {}
-    # with open(os.path.join(here, '__version__.py')) as f:
-    #     exec(f.read(), version)
-    # ABOUT['__version__'] = '0.5.1' , version=ABOUT['__version__'], version=ABOUT['__version__']
-
+  
     # Handle args thanks to DocOpt
     arguments = docopt(__doc__, version=ABOUT['__version__'])
 
