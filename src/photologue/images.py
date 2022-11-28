@@ -6,7 +6,7 @@ from photologue.files import clean_name, library
 
 import logging
 import re
-# from pprint import pprint
+from pprint import pprint
 
 
 class Images:
@@ -30,7 +30,7 @@ class Images:
             in self.__list()
         }
 
-    def list_catorgoried(self) -> dict:
+    def XX_list_catorgoried(self) -> dict:
         types: dict[str, list] = {
             'dsc': [],
             '_dsc': [],
@@ -108,4 +108,15 @@ class Images:
 
     def process_images(self) -> None:
         for camera in self.CATALOGUE.cameras():
-            self.CLEAN.process_camera_images(camera, self.CATALOGUE.camera_files(camera))
+            processed = self.CLEAN.process_camera_images(camera, self.CATALOGUE.camera_files(camera))
+            for p in processed:
+                if 'master' not in p or not p['master']:
+                    # self.LOGGER.warn(f'Master not Found {camera}')
+                    # pprint(p)
+                    pass
+                elif len(p['copies']) >= 1:
+                    for c in p['copies']:
+                        self.CATALOGUE.add_relationship(c, 'copy', p['master'])
+                else:
+                    pass
+                    # pprint(p)

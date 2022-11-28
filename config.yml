@@ -49,6 +49,10 @@ cleanup:
       - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/
       # Most Libraries live here
       - /Volumes/LaCie/_MASTER_Aperture_20190520/
+      # Check these
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/Aperture Library__1.aplibrary/
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library__1.photolibrary/
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Shillington/Shillington__1.aplibrary/
     files:
   ignore:
     paths:

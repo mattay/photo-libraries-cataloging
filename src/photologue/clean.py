@@ -1,7 +1,12 @@
 import logging
-from pprint import pprint
-# from datetime import datetime
-from photologue.clean_utils import original_date, raw_plus_checksums, group_by_paths, group_by_checksum, list_files
+# from pprint import pprint
+from photologue.clean_utils import (
+    group_by_checksum,
+    group_by_paths,
+    list_files,
+    original_date,
+    raw_plus_checksums,
+)
 
 
 class Clean:
@@ -17,7 +22,7 @@ class Clean:
         self.preferred = preferred
         self.ignore = ignore
 
-    def process_camera_images(self, camera: str, images: list[dict]) -> None:
+    def process_camera_images(self, camera: str, images: list[dict]) -> list:
         collected = self.__collect_image_date_files(images)
         results = []
         if collected:
@@ -47,17 +52,26 @@ class Clean:
                     # Multiple Extentions -> Exports or RAW+
                     if len(extentions) > 1:
                         dirty_copies += 1
-                        results.extend(self.__mutiple_extentions(camera, image, extentions, files))
+                        # TODO:
+                        # results.extend(self.__mutiple_extentions(camera, image, extentions, files))
 
                     # Multiple checksums
                     elif len(checksums) > 1 or len(sizes) > 1:
                         dirty_copies += 1
-                        results.extend(self.__multiple_checksums(camera, image, files))
+                        # TODO:
+                        # results.extend(self.__multiple_checksums(camera, image, files))
 
                     # Duplicates
                     elif files:
                         clean_copies += 1
-                        results.append(self.__clean_images(files))
+                        # cleaned = 
+                        r = {
+                            **self.__clean_images(files),
+                            'camera': camera,
+                            'image': image,
+                            'momment': momment,
+                        }
+                        results.append(r)
 
                     else:
                         ignored_copies += 1
@@ -72,6 +86,8 @@ class Clean:
                 f'dirty {dirty_copies:>5}',
                 f'ignored {ignored_copies:>5}'
             ]))
+       
+        return results
 
     def __collect_image_date_files(self, images: list[dict]) -> dict:
         """Organises files into a heiarchy of Images then date/time and files
@@ -292,9 +308,10 @@ class Clean:
                 # f['preferred_rules'] = preferred_rules
 
         if not image_master_file:
-            # self.LOGGER.error(f'[Prefered Master] - No master file identified')
+            self.LOGGER.error(f'[Prefered Master] - No master file identified')
+            list_files('Prefered Master', files)
             pass
-            # list_files('Prefered Master', files)
+            # 
             # exit()
 
         return image_master_file
