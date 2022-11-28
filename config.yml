@@ -69,6 +69,18 @@ cleanup:
       - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/2006/30:12:2006/IMG_9709.JPG
       # -- QSS --
       - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Previews/2007/Kakadu/38550051.jpg
+      # No Dates
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/03/28/20160328-101344/IMG_0669.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/11/20160211-012558/IMG_0387.JPG
+      # Unknown -- No Dates -- Collected
+      - "/Volumes/Padawan/_Pictures/_Libaries/iPhoto Library #3/Masters/2012/06/06/20120606-001657/IMG_0003.JPG"
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/15/20160215-074502/IMG_0422.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/17/20160217-073451/IMG_0428.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/29/20160229-093651/IMG_0566.JPG
+      # Panasonic Phone
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/02/03/03-02-07_1447.jpg
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/02/03/03-02-07_1601.jpg
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/01/26/26-01-07_1037.jpg
 
   camera_rules:
     PENTAX K10D:
