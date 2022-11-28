@@ -6,6 +6,7 @@ src/photologue/__init__.py
 src/photologue/__version__.py
 src/photologue/catalogue.py
 src/photologue/clean.py
+src/photologue/clean_utils.py
 src/photologue/exif.py
 src/photologue/files.py
 src/photologue/images.py

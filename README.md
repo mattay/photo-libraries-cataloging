@@ -8,7 +8,7 @@ Using Homebrew we'll install:
 - sqlite
 
 ```bash
-brew install ExifTool sqlite
+brew install ExifTool sqlite pipenv
 ```
 
 ### Enabling Foreign Key Support
