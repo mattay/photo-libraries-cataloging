@@ -67,7 +67,7 @@ def list_files(group: str, files: list):
     print(group)
     print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  COLOURSPACE  FILE PATH")
     print("  ---------- ---------- - ------------ - ---------------- -------- ------------ ------------------------------------------------")
-    [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['has_copy_in_subfix']}" +
+    [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['copy']}" +
            f" {str(file['software']):<16} {str(file['quality']):<8} {str(file['color_space']):<12} {file['file_path']}")
         for file
         in sorted(files, key=lambda d: d['checksum'])
