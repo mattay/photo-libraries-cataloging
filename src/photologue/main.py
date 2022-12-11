@@ -33,6 +33,7 @@ import yaml
 
 
 # Application libs
+from photologue.files import clean_exif
 from photologue.images import Images
 
 
@@ -182,17 +183,8 @@ def collect(mode: str | None = None) -> None:
     print(f'{counter} {mode}')
 
 
-def clean_exif(file) -> dict:
-    cleaned = {}
-    for tag, value in file.groupdict().items():
-        if tag == 'camera_make' and value == '-':
-            value = 'unknown'
-        if tag == 'camera_model' and value == '-':
-            value = 'unknown'
 
-        cleaned[tag] = None if value == '-' else value
 
-    return cleaned
 
 
 def missing(mode: str | None, line_ending: str = "\n") -> None:
