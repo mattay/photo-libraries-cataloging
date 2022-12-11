@@ -10,7 +10,11 @@ from pprint import pprint
 
 
 class Images:
-    def __init__(self, indexing_cabinate, raw_extentions, cleanup):
+    def __init__(
+        self, indexing_cabinate: str,
+        raw_extentions: list = [],
+        cleanup: dict = {'preferred': {}, 'ignore': {}, 'camera_rules': {}}
+    ):
         self.LOGGER = logging.getLogger('Images')
         self.CATALOGUE = Catalogue(indexing_cabinate)
         self.CLEAN = Clean(cleanup['preferred'], cleanup['ignore'], cleanup['camera_rules'])
