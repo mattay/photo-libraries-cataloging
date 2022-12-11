@@ -170,3 +170,21 @@ def extract_library(path):
         # print('UNKNOWEN library type', path)
 
     return library
+
+
+def is_desired(file, library) -> bool:
+    desired = False
+
+    if file['thumbnail'] or file['face'] or file['temp']:
+        return False
+
+    if library['is'] in ['is_preview', 'is_thumbnail', 'is_proxy', 'is_resource']:
+        return False
+
+    if library['library_type'] is None or library['is'] in ['is_master', 'is_original']:
+        # image['raw_image'] = True if image['extention'] in self.raw_extentions else False
+        return True
+
+    print(file['path'])
+
+    return desired
