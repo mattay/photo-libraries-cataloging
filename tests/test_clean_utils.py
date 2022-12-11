@@ -1,16 +1,5 @@
 import pytest
-from photologue.clean_utils import original_date, raw_plus_checksums, group_by_paths
-
-
-@pytest.mark.parametrize("test__original_date, expected_dates", [
-    ("2012:12:25 08:39:41", "2012:12:25"),
-    ("2012:01:15 17:23:38+10:00", "2012:01:15"),
-    ("    :  :     :  :", '    :  :  '),
-    ("", '    :  :  '),
-])
-def test__original_date(test__original_date, expected_dates):
-    assert original_date(test__original_date) == expected_dates
-
+from photologue.clean_utils import group_by_raw_plus_checksums, group_by_paths
 
 DMC_LX3_P1000847 = [
     {'checksum': 1487073708, 'file_extention': '.JPG', 'file_path': '/Volumes/LaCie/_MASTER_Aperture_20190520/ForSale.aplibrary/Masters/2010/02/28/20100228-211134/P1000847.JPG'},
