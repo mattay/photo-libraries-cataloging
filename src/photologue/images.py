@@ -7,7 +7,7 @@ from photologue.files import clean_name, extract_library, is_desired
 
 import logging
 import re
-from pprint import pprint
+# from pprint import pprint
 
 
 class Images:
@@ -128,11 +128,6 @@ class Images:
             self.CATALOGUE.add_library(image_path, library)
             return image_path
 
-        elif lib['is'] not in ['is_preview', 'is_thumbnail', 'is_proxy', 'is_resource']:
-            pass  # Ignore
-
-        return None
-
     def add_stats(self, image_path: str, filestats: dict) -> None:
         self.CATALOGUE.add_filestats(image_path, filestats)
 
@@ -143,25 +138,127 @@ class Images:
         self.CATALOGUE.add_exif(image_path, exif)
 
     def process_images(self) -> None:
+        summary = []
+        self.CATALOGUE.clear_relationship()
         for camera in self.CATALOGUE.cameras():
-            processed = self.CLEAN.process_camera_images(camera, self.CATALOGUE.camera_files(camera))
-            for p in processed:
-                if 'master' in p and p['master'] and len(p['copies']) >= 1:
-                    for c in p['copies']:
-                        self.CATALOGUE.add_relationship(c, 'copy', p['master'])
-                elif p['momment'] and p['image']:
-                    # print(p['master']) TODO: what do we do with just masters
-                    pass
-                elif 'momment' not in p:
-                    self.LOGGER.warn(f"Moment not found for {p['image']}")
-                    pprint(p, width=256)
-                elif 'master' not in p or not p['master']:
-                    # self.LOGGER.warn(f"Master not Found {camera}, {p['momment']}, {p['image']}")
-                    # pprint(p, width=256)
-                    pass
-                else:
-                    self.LOGGER.warn(f"WHAT A MESS {p['camera']}, {p['momment']}, {p['image']}")
-                    # pprint(p, width=256)
-                    # exit()
+            camera_files = self.CATALOGUE.camera_files(camera)
+            collected = group_files_by_image_date(camera_files)
+            s = {
+                'camera': camera,
+                'countof': {
+                    'files': len(camera_files),
+                    'images': len(collected.keys()),
+                    'momments': 0,
+                    'masters': 0,
+                    'copies': 0,
+                    'filtered': 0,
+                    'ignored': 0,
+                    'unresolved': 0
+                }
+            }
+
+            for image, datetimes in collected.items():
+                for momment, files in datetimes.items():
+                    s['countof']['momments'] += 1
+                    processed_counts = self.process_camera_image(camera, image, files)
+                    for processed, count in processed_counts.items():
+                        s['countof'][processed] += count
                     # pass
-                    
+
+            summary.append(s)
+        self.log_process_summary(summary)
+
+    def process_camera_image(self, camera: str, image: str, files: list[dict]) -> dict:
+        processed = self.CLEAN.process_camera_image_files(camera, image, files)
+        processed_counts = {
+            'masters': 0,
+            'copies': 0,
+            'ignored': 0,
+            'filtered': 0,
+            'unresolved': 0
+        }
+
+        master = None
+        for p in processed:
+
+            if 'master' in p and p['master']:
+                processed_counts['masters'] += 1
+                master = p['master']
+                self.CATALOGUE.add_relationship(master, 'master')
+
+                if len(p['copies']) >= 1:
+                    processed_counts['copies'] += len(p['copies'])
+                    for file_path in p['copies']:
+                        self.CATALOGUE.add_relationship(file_path, 'copy', master)
+
+            if 'ignored' in p:
+                processed_counts['ignored'] += len(p['ignored'])
+                for file in p['ignored']:
+                    self.CATALOGUE.add_relationship(file['file_path'], 'ignored', master)
+
+            if 'filtered' in p:
+                processed_counts['filtered'] += len(p['filtered'])
+                for file in p['filtered']:
+                    self.CATALOGUE.add_relationship(file['file_path'], 'filtered', master)
+
+            if 'unresolved' in p:
+                processed_counts['unresolved'] += len(p['unresolved'])
+                for file in p['unresolved']:
+                    self.CATALOGUE.add_relationship(file['file_path'], 'unresolved', master)
+
+        return processed_counts
+
+    def log_process_summary(self, summary: list) -> None:
+        # Summary
+        totals = {
+            'cameras': 0,
+            'files': 0,
+            'images': 0,
+            'momments': 0,
+            'masters': 0,
+            'copies': 0,
+            'filtered': 0,
+            'ignored': 0,
+            'unresolved': 0,
+            'opps': 0
+        }
+        
+        self.LOGGER.info("Process Summary")
+        for s in summary:
+            oops = s['countof']['files']
+            oops -= s['countof']['masters']
+            oops -= s['countof']['copies']
+            oops -= s['countof']['filtered']
+            oops -= s['countof']['ignored']
+            oops -= s['countof']['unresolved']
+
+            for of, count in s['countof'].items():
+                totals[of] = totals[of] + count | count
+            totals['cameras'] += 1
+            totals['opps'] += oops
+
+            self.LOGGER.info(" | ".join([
+                f"{s['camera']:<28}",
+                f"Images {s['countof']['images']:>6,}",
+                f"Momments {s['countof']['momments']:>6,}",
+                f"Files {s['countof']['files']:>7,}",
+                f"Masters {s['countof']['masters']:>6,}",
+                f"Copies {s['countof']['copies']:>7,}",
+                f"Filtered {s['countof']['filtered']:>6,}",
+                f"Ignored {s['countof']['ignored']:>6,}",
+                f"Unresolved {s['countof']['unresolved']:>4,}",
+                f"Oops {oops:>7,}"
+            ]))
+
+        self.LOGGER.info(" | ".join([
+            f"TOTALS{totals['cameras']:>22}",
+            f"TOTAL  {totals['images']:>6,}",
+            f"TOTAL    {totals['momments']:>6,}",
+            f"TOTAL {totals['files']:>7,}",
+            f"TOTAL   {totals['masters']:>6,}",
+            f"TOTAL  {totals['copies']:>7,}",
+            f"TOTAL    {totals['filtered']:>6,}",
+            f"TOTAL   {totals['ignored']:>6,}",
+            f"TOTAL      {totals['unresolved']:>4,}",
+            f"TOTAL{totals['opps']:>7,}"
+        ]))
