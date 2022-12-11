@@ -79,7 +79,7 @@ find_in_paths() {
     echo "Finding images in ${p}"
 
     find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
-    | pipenv run python ./main.py collect files
+    | pipenv run python ${APP_MAIN} collect files
 
     END=$(date +%s)
     elapsed $START $END
@@ -156,6 +156,7 @@ collect_checksums() {
 
 
 command_collect() {
+  # find_in_paths
   collect_stats
   collect_exif
   collect_checksums
