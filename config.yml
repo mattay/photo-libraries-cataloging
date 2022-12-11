@@ -5,7 +5,17 @@ import:
       - /Volumes/Jedi/CLEANUP
       - /Volumes/Jedi/Photos
     Padiwan:
-      - /Volumes/Padawan/_Pictures/Aperture Library Collections
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Cars
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Family
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/For Sale
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Holidays
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Lisa
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Playing Around
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Scratch
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Shillington
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Taekwondo
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Travels
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries
       - /Volumes/Padawan/_Pictures/MemoryCards_Archive
       - /Volumes/Padawan/_Pictures/_Backups
       - /Volumes/Padawan/_Pictures/_Exports
@@ -14,7 +24,6 @@ import:
     LaCie:
       - /Volumes/LaCie/_MASTER_Aperture_20190520
       - /Volumes/LaCie/_PHOTOS
-      - /Volumes/LaCie/ToValidateBackup
   extentions:
     - .PEF
     - .DNG
@@ -34,10 +43,12 @@ import:
     - _o.jpg
     - \.__IGP
     - '[T|t]humb'
+
 raw_extentions:
   - .PEF
   - .DNG
   - .RW2
+
 cleanup:
   preferred:
     paths:
@@ -49,15 +60,28 @@ cleanup:
       - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/
       # Most Libraries live here
       - /Volumes/LaCie/_MASTER_Aperture_20190520/
+      # Check these
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/Aperture Library__1.aplibrary/
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library__1.photolibrary/
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Masters/
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/Shillington/Shillington__1.aplibrary/
     files:
   ignore:
     paths:
       # -- PENTAX K10D -- Should probably be keep
-      # - /Volumes/Padawan/_Pictures/__Raw Photos/Egypt/
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Egypt/
+      - /Volumes/Padawan/_Pictures/_Exports/2009_Egypt/
+      - '/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Masters/2008/Eskitis Building/'
+      - '/Volumes/Padawan/_Pictures/_Libaries/iPhoto Library #2/Masters/2008/Eskitis Building/'
+      # -- DIGITAL IXUS 500 --
+      - /Volumes/Padawan/_Pictures/_Exports/KA Laser/
     files:
+      # -- PENTAX K10D 
+
+
       # -- PENTAX K10D -- Extentions
       - /Volumes/LaCie/_MASTER_Aperture_20190520/Kumuka Family Photos.aplibrary/Masters/2009/09/25/20090925-175126/_IGP2894.JPG
-      # -- DMC LX3 --
+     # -- DMC LX3 --
       - /Volumes/Padawan/_Pictures/_Exports/AMATA2009/P1010021.JPG
       # -- Canon DIGITAL IXUS 500 --
       - /Volumes/Padawan/_Pictures/_Exports/IMG_8360.JPG
@@ -65,6 +89,21 @@ cleanup:
       - /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/2006/30:12:2006/IMG_9709.JPG
       # -- QSS --
       - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Previews/2007/Kakadu/38550051.jpg
+      # No Dates
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/03/28/20160328-101344/IMG_0669.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/11/20160211-012558/IMG_0387.JPG
+      # Unknown -- No Dates -- Collected
+      - "/Volumes/Padawan/_Pictures/_Libaries/iPhoto Library #3/Masters/2012/06/06/20120606-001657/IMG_0003.JPG"
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/15/20160215-074502/IMG_0422.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/17/20160217-073451/IMG_0428.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/29/20160229-093651/IMG_0566.JPG
+      - /Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2015/12/02/20151202-093421/IMG_0019.JPG
+      # Panasonic Phone
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/02/03/03-02-07_1447.jpg
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/02/03/03-02-07_1601.jpg
+      - /Volumes/Padawan/_Pictures/__Raw Photos/Pictures/2007/01/26/26-01-07_1037.jpg
+      # iPhone 3G
+      - /Volumes/Padawan/_Pictures/_Exports/travel_pics/IMG_0021.jpg
 
   camera_rules:
     PENTAX K10D:
@@ -96,6 +135,16 @@ cleanup:
             quality: RAW
             software: K10D Ver 1.30
             modified: 0
+        # Modified
+        - condition: extentions
+          matches: !!set {.PEF, .jpg}
+          action: keep
+          file_props:
+            file_extention: .PEF
+            quality: RAW
+            # software: K10D Ver 1.30
+            # modified: 0
+          
         # Extentions -- JPG -- Keep
         - condition: extentions
           matches: !!set {.JPG, .jpg}
@@ -105,29 +154,12 @@ cleanup:
             quality: Best
             software: K10D Ver 1.00
             modified: 0
-        # Extentions -- JPG -- Ignore
         - condition: extentions
           matches: !!set {.JPG, .jpg}
-          action: ignore
+          action: keep
           file_props:
             file_extention: .JPG
-            quality: none
-            software: K10D Ver 1.00
-            modified: 1
-        - condition: extentions
-          matches: !!set {.JPG, .jpg}
-          action: ignore
-          file_props:
-            # file_extention: .jpg
-            quality:
-            software: QuickTime 7.5.5
-            modified: 1
-        - condition: extentions
-          matches: !!set {.JPG, .jpg}
-          action: ignore
-          file_props:
-            file_extention: .jpg
-            quality:
+            quality: Best
             software: K10D Ver 1.00
             modified: 1
         # Checksums -- PEF
@@ -140,6 +172,14 @@ cleanup:
             software: K10D Ver 1.00
             quality: RAW
         # Checksums -- JPG
+        - condition: checksums
+          matches:
+          action: keep
+          file_props:
+            file_extention: .JPG
+            modified: 0
+            software: K10D Ver 1.00
+            quality: Best
         - condition: checksums
           matches:
           action: keep
@@ -161,7 +201,6 @@ cleanup:
             file_extention: .PEF
             modified: 0
             quality: RAW
-            software: K-5 Ver 1.14 
 
     DMC-LX3:
       Owner: Matthew Anderson
@@ -211,6 +250,12 @@ cleanup:
             file_extention: .jpg
             modified: 1
             software: Aperture 3.6
+        - condition: extentions
+          matches: !!set {.JPG, .jpg}
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            software: Aperture 3.3.1
 
     PENTAX K200D:
       Owner: Mark
@@ -219,12 +264,25 @@ cleanup:
       Plan: Keep sepeate from my collection
       Location: Collected
       filters:
+        # Extentions -- JPG/jpg-- Ignore
         - condition: extentions
           matches: !!set {.JPG, .DNG}
           action: ignore
           file_props:
             file_extention: .JPG
             quality: Best
+        - condition: extentions
+          matches: !!set {.jpg, .DNG}
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            software: 'Aperture 3.1.2'
+        - condition: extentions
+          matches: !!set {.jpg, .JPG}
+          action: ignore
+          file_props:
+            software: 'Aperture 3.1.2'
+        
     QSS:
       Notes: Scanned from Film
       Content: Kakadu trip, maybe others
@@ -237,6 +295,17 @@ cleanup:
           file_props:
             # software: 
             mod_date: '2007:10:01'
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            software: QuickTime 7.4
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            software: QuickTime 7.3.1
+
     IWS:
       Notes: Scanned from Film, ignore not kakadu
       Content: Kakadu trip -> /Volumes/Padawan/_Pictures/_Libaries/iPhoto Library/Masters/2007/Originals_6
@@ -284,6 +353,12 @@ cleanup:
           file_props:
             file_extention: .JPG
             software: 'QuickTime 7.1.6'
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            file_extention: .JPG
+            software: QuickTime 7.1.5
         - condition: checksums
           matches:
           action: ignore

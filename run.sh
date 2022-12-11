@@ -79,11 +79,24 @@ find_in_paths() {
     echo "Finding images in ${p}"
 
     find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
-    | pipenv run python ./main.py collect files
+    | pipenv run python ${APP_MAIN} collect files
 
     END=$(date +%s)
     elapsed $START $END
   done
+}
+
+profile_find_in_paths(){
+  local IFS=$'\n'
+
+  file_profiled=profiling/profile_find_in_paths.dat
+  p="/Volumes/Padawan/_Pictures/Aperture Library Collections"
+  echo "Finding images in ${p}"
+
+  find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
+  | pipenv run python -m cProfile -o ${file_profiled} ${APP_MAIN} collect files
+
+  snakeviz ${file_profiled}
 }
 
 
@@ -143,6 +156,7 @@ collect_checksums() {
 
 
 command_collect() {
+  # find_in_paths
   collect_stats
   collect_exif
   collect_checksums
@@ -192,6 +206,16 @@ command_test() {
   pipenv run pytest  
 }
 
+command_profile() {
+  echo "Profiling"
+  profile_find_in_paths  
+}
+
+command_summary() {
+  echo "Sumamry"
+  pipenv run python ${APP_MAIN} summary
+}
+
 
 main_help() {
   echo "run.sh <COMMAND>"
@@ -202,6 +226,7 @@ main_help() {
   echo $'\tlint'
   echo $'\ttest'
   echo $'\tcleanup'
+  echo $'\tsummary'
 }
 
 
@@ -227,6 +252,14 @@ main() {
   elif [[ $COMMAND == "cleanup" ]]
   then
     command_cleanup
+
+  elif [[ $COMMAND == "profile" ]]
+  then
+    command_profile
+
+  elif [[ $COMMAND == "summary" ]]
+  then
+    command_summary
 
   else
     main_help

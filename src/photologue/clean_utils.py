@@ -2,17 +2,6 @@
 import os
 
 
-def original_date(date_time: str) -> object:
-    date = '    :  :  '
-    if date_time == '-':
-        pass
-    elif date_time == '    :  :     :  :':
-        pass
-    elif date_time:
-        date = date_time[:10]
-    return date
-
-
 def group_by_paths(files: list) -> dict[str, dict]:
     """
     Looking for raw files with matching jpeg file in same directory
@@ -43,7 +32,7 @@ def group_by_checksum(files: list, filter_out_tag: str = '') -> dict[str, list]:
     return results
 
 
-def raw_plus_checksums(paired: dict) -> dict[str, dict]:
+def group_by_raw_plus_checksums(paired: dict) -> dict[str, dict]:
     r_checksums: dict[str, list] = {}
     j_checksums: dict[str, list] = {}
 
@@ -78,7 +67,7 @@ def list_files(group: str, files: list):
     print(group)
     print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  COLOURSPACE  FILE PATH")
     print("  ---------- ---------- - ------------ - ---------------- -------- ------------ ------------------------------------------------")
-    [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['has_copy_in_subfix']}" +
+    [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['copy']}" +
            f" {str(file['software']):<16} {str(file['quality']):<8} {str(file['color_space']):<12} {file['file_path']}")
         for file
         in sorted(files, key=lambda d: d['checksum'])

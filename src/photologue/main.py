@@ -6,6 +6,7 @@ Usage:
     main.py missing (checksums|exifs|stats) [--print0]
     main.py mappings [--verbose]
     main.py rules
+    main.py summary
     main.py (-h | --help)
     main.py --version
     main.py --verbose
@@ -17,7 +18,7 @@ Options:
     --sample
 """
 from docopt import docopt
-from typing import Any
+from typing import Any, Pattern
 
 import os
 import sys
@@ -32,6 +33,7 @@ import yaml
 
 
 # Application libs
+from photologue.files import clean_exif
 from photologue.images import Images
 
 
@@ -68,9 +70,9 @@ def setup() -> None:
 
         fileConfig(logger_ini, defaults={'path': path, 'date': date, 'command': command})
         LOGGER = getLogger()
-        LOGGER.info(f"Version: {ABOUT['__version__']}")
-        LOGGER.info(f"Command: {command}")
-        LOGGER.info(f"Mode: {mode}")
+        LOGGER.debug(f"Version: {ABOUT['__version__']}")
+        LOGGER.debug(f"Command: {command}")
+        LOGGER.debug(f"Mode: {mode}")
 
     # Configuration
     if not os.path.exists(config_yml):
@@ -79,7 +81,7 @@ def setup() -> None:
     else:
         with open(config_yml, "r") as yamlfile:
             CONFIG = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            LOGGER.info(f'Loading configuration file successful - {config_yml}')
+            LOGGER.debug(f'Loading configuration file successful - {config_yml}')
 
     # Check config for expected values
     for v in ['import', 'cleanup', 'raw_extentions']:
@@ -100,98 +102,112 @@ def setup() -> None:
     # Images class
     IMAGES = Images(
         indexing_cabinate,
-        CONFIG.get('import').get('raw_extentions'),
+        CONFIG.get('raw_extentions'),
         CONFIG.get('cleanup')
     )
 
 
 def collect(mode: str | None = None) -> None:
     global LOGGER
-    counter = 0
+    counter_files: int = 0
+    counter_keep: int = 0
+    counter_ignored: int = 0
+
+    incomingPattern: dict[str, Pattern] = {
+        'checksums': re.compile(r'''^(?P<checksum>[0-9]+) (?P<octets>[0-9]+) (?P<file_path>.+)'''),
+        'exifs': re.compile(r'''
+            ^(?P<date_time_original>.+)
+            \t(?P<date_time_modifed>.+)
+            \t(?P<camera_make>.+)
+            \t(?P<camera_model>.+)
+            \t(?P<color_space>.+)
+            \t(?P<x_resolution>.+)
+            \t(?P<y_resolution>.+)
+            \t(?P<resolution_unit>.+)
+            \t(?P<quality>.+)
+            \t(?P<image_height>.+)
+            \t(?P<image_width>.+)
+            \t(?P<software>.+)
+            \t(?P<file_path>.+)
+        ''', re.VERBOSE),
+        'stats': re.compile(r'''
+            ^(?P<size>.+)
+            \t(?P<birth>.+)
+            \t(?P<change>.+)
+            \t(?P<modified>.+)
+            \t(?P<accessed>.+)
+            \t(?P<file_path>.+)
+        ''', re.VERBOSE),
+    }
 
     LOGGER.info(f'Collecting {mode}')
     for file in sys.stdin:
+        counter_files += 1
+        file = file.rstrip('\n')
         #
         # Files
         #
         if mode == 'files':
-            collected = IMAGES.add_file(file.rstrip('\n'))
-            counter += 1 if collected else 0
+            collected = IMAGES.add_file(file)
+            if collected:
+                counter_keep += 1
+            else:
+                counter_ignored += 1
 
         #
         # Stats
         #
         if mode == 'stats':
-            incoming = re.match(r"^(?P<size>.+)\t(?P<birth>.+)\t(?P<change>.+)\t(?P<modified>.+)\t(?P<accessed>.+)\t(?P<file_path>.+)\n", file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-                IMAGES.add_stats(incoming.group('file_path'), {
-                    'size': incoming.group('size'),
-                    'birthtime': incoming.group('birth'),
-                    'ctime': incoming.group('change'),
-                    'mtime': incoming.group('modified'),
-                    'atime': incoming.group('accessed')
-                })
+                counter_keep += 1
+                IMAGES.add_stats(
+                    incoming.group('file_path'),
+                    {
+                        'size': incoming.group('size'),
+                        'birthtime': incoming.group('birth'),
+                        'ctime': incoming.group('change'),
+                        'mtime': incoming.group('modified'),
+                        'atime': incoming.group('accessed')
+                    }
+                )
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No stats found for {file}')
 
         #
         # EXIFs
         #
         if mode == 'exifs':
-            incomingPattern = re.compile(r'''
-        ^(?P<date_time_original>.+)
-        \t(?P<date_time_modifed>.+)
-        \t(?P<camera_make>.+)
-        \t(?P<camera_model>.+)
-        \t(?P<color_space>.+)
-        \t(?P<x_resolution>.+)
-        \t(?P<y_resolution>.+)
-        \t(?P<resolution_unit>.+)
-        \t(?P<quality>.+)
-        \t(?P<image_height>.+)
-        \t(?P<image_width>.+)
-        \t(?P<software>.+)
-        \t(?P<file_path>.+)
-        \n
-      ''', re.VERBOSE)
-            incoming = incomingPattern.match(file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-
+                counter_keep += 1
                 cleaned = clean_exif(incoming)
                 IMAGES.add_exif(
                     cleaned['file_path'],
                     cleaned
                 )
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No exifs found for {file}')
         #
         # Checksums
         #
         if mode == 'checksums':
-            incoming = re.match(r"^(?P<checksum>[0-9]+) (?P<octets>[0-9]+) (?P<file_path>.+)\n", file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-                IMAGES.add_checksum(incoming.group('file_path'), incoming.group('checksum'))
+                counter_keep += 1
+                IMAGES.add_checksum(
+                    incoming.group('file_path'),
+                    incoming.group('checksum')
+                )
 
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No checksums found for {file}')
 
-    print(f'{counter} {mode}')
-
-
-def clean_exif(file) -> dict:
-    cleaned = {}
-    for tag, value in file.groupdict().items():
-        if tag == 'camera_make' and value == '-':
-            value = 'unknown'
-        if tag == 'camera_model' and value == '-':
-            value = 'unknown'
-
-        cleaned[tag] = None if value == '-' else value
-
-    return cleaned
+    percentage = '-' if counter_files == 0 else f'{counter_keep/counter_files*100:.0f}%'
+    print(f'[{mode}] {counter_files:>9,} files\tKeep:{counter_keep:>8,}\tIgnored:{counter_ignored:>8,}\t\t{percentage}')
 
 
 def missing(mode: str | None, line_ending: str = "\n") -> None:
@@ -222,6 +238,18 @@ def mapping() -> None:
     pass
 
 
+def summary():
+    global IMAGES
+    total = 0
+
+    image_types = IMAGES.list_catorgoried()
+    for pattern, image_names in image_types.items():
+        print(f'{pattern:>40} {len(image_names):>8,}')
+        total += len(image_names)
+    print(f'{"":=>40} {"":=>8}')
+    print(f'{"TOTAL":>40} {total:>8,}')
+
+
 def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
     for arg in arguments.keys():
         if arguments[arg] and arg in valid_options:
@@ -236,12 +264,12 @@ def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
 
 def main():
     global ABOUT
-  
+
     # Handle args thanks to DocOpt
-    arguments = docopt(__doc__, version=ABOUT['__version__'])
+    arguments = docopt(__doc__, version=ABOUT['__version__'])  # type: ignore
 
     ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules'])
+    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules', 'summary'])
     ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
 
     setup()
@@ -261,6 +289,9 @@ def main():
 
     if command == 'mappings':
         mapping()
+
+    if command == 'summary':
+        summary()
 
 
 if __name__ == '__main__':

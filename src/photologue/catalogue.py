@@ -102,12 +102,18 @@ class Catalogue:
         self.cur.execute('''--sql
             CREATE TABLE IF NOT EXISTS realationships
             (
-                file_path text,
-                is_a text,
-                of_file_path text,
+                file_path text NOT NULL,
+                is_a text NOT NULL,
+                of_file_path text DEFAULT EMPTY,
                 FOREIGN KEY(file_path) REFERENCES file(file_path) ON DELETE CASCADE,
-                FOREIGN KEY(of_file_path) REFERENCES file(file_path) ON DELETE CASCADE
+                FOREIGN KEY(of_file_path) REFERENCES file(file_path) ON DELETE CASCADE,
+                UNIQUE(file_path, is_a, of_file_path)
             );
+        ''')
+        #  indexes
+        self.cur.execute('''--sql
+            CREATE INDEX IF NOT EXISTS
+                idx_realationships_is_a ON realationships (is_a);
         ''')
 
         # Clean up dirty Data before use
@@ -136,6 +142,20 @@ class Catalogue:
         """
         self.cur.execute(query)
         self.save()
+
+    def __call(self, query: str) -> None:
+        try:
+            with self.conn:
+                self.cur.execute(query)
+
+        except sqlite3.Warning as w:
+            self.logger.warn("Warning occurred: ", w)
+            self.logger.warn("Query: ", query)
+
+        except sqlite3.Error as e:
+            self.logger.error("Error occurred: ", e)
+            self.logger.error("Query: ", query)
+            exit(1)
 
     def __add(self, query: str, data) -> None:
         # TODO:
@@ -313,6 +333,25 @@ class Catalogue:
             self.logger.error("Query: ", 'COMMIT')
             exit(1)
 
+    def add_relationship(self, file_path: str, is_a: str, of_file_path: str | None = None) -> None:
+        query = """--sql
+            INSERT OR IGNORE INTO realationships
+            (
+                file_path, is_a, of_file_path
+            )
+            VALUES (?, ?, ?);
+        """
+        data = (
+            file_path, is_a, of_file_path
+        )
+        self.__add(query, data)
+
+    def clear_relationship(self) -> None:
+        query = """--sql
+            delete from realationships;
+        """
+        self.__call(query)
+
     #
     # Requests
     #
@@ -321,15 +360,15 @@ class Catalogue:
         query = """--sql
             SELECT DISTINCT f.file_name
             FROM file f
-            ORDER BY file_name;
+            ORDER BY f.file_name;
             """
         return self.__request_list(query)
 
     def image_paths(self, image) -> list[str]:
         query = """--sql
-            SELECT file_path
-            FROM file
-            WHERE file_name=:file_name;
+            SELECT f.file_path
+            FROM file f
+            WHERE f.file_name=:file_name;
         """
         return self.__request_list(query, {"file_name": image})
 
@@ -386,11 +425,13 @@ class Catalogue:
             SELECT
                 e.camera_model,
                 e.date_time_original,
+                e.date_time_modifed,
                 f.file_name,
                 f.checksum,
                 f.size,
                 f.file_extention,
                 f.has_copy_in_subfix,
+                f.has_copy_in_name,
                 f.file_path,
                 e.quality,
                 e.software,
