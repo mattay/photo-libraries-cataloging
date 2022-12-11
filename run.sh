@@ -86,6 +86,19 @@ find_in_paths() {
   done
 }
 
+profile_find_in_paths(){
+  local IFS=$'\n'
+
+  file_profiled=profiling/profile_find_in_paths.dat
+  p="/Volumes/Padawan/_Pictures/Aperture Library Collections"
+  echo "Finding images in ${p}"
+
+  find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
+  | pipenv run python -m cProfile -o ${file_profiled} ${APP_MAIN} collect files
+
+  snakeviz ${file_profiled}
+}
+
 
 # Grab file stat
 collect_stats() {
@@ -192,6 +205,11 @@ command_test() {
   pipenv run pytest  
 }
 
+command_profile() {
+  echo "Profiling"
+  profile_find_in_paths  
+}
+
 command_summary() {
   echo "Sumamry"
   pipenv run python ${APP_MAIN} summary
@@ -233,6 +251,10 @@ main() {
   elif [[ $COMMAND == "cleanup" ]]
   then
     command_cleanup
+
+  elif [[ $COMMAND == "profile" ]]
+  then
+    command_profile
 
   elif [[ $COMMAND == "summary" ]]
   then
