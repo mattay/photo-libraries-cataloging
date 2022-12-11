@@ -319,7 +319,7 @@ class Catalogue:
             self.logger.error("Query: ", 'COMMIT')
             exit(1)
 
-    def add_relationship(self, file_path: str, is_a: str, of_file_path: str) -> None:
+    def add_relationship(self, file_path: str, is_a: str, of_file_path: str | None = None) -> None:
         query = """--sql
             INSERT OR IGNORE INTO realationships
             (
