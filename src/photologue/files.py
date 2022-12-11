@@ -1,12 +1,35 @@
 import os
 from os.path import splitext
 
-# import logging
 import re
-# from pprint import pprint
+
+
+RE_FILE_IS: dict = {
+    # DISCARD
+    'temp': re.compile(r"^\.", re.IGNORECASE),
+    'thumb': re.compile(r"^.humb_", re.IGNORECASE),
+    'face': re.compile(r".*_face[0-9]+$", re.IGNORECASE),
+    '_n': re.compile(r".*_n$", re.IGNORECASE),
+    # KEEP
+    'copy_of': re.compile(r"^Copy (\([1-9]\) )?of ", re.IGNORECASE),
+    'copy': re.compile(r".*(_[1-9])+$", re.IGNORECASE),
+    'duplicate': re.compile(r".* \([1-9]\)$", re.IGNORECASE),
+    'double_extention': re.compile(r".*\..{3}$", re.IGNORECASE),
+}
+
+RE_LIBRARY: dict = {
+    'aplibrary': re.compile(r"(?P<library_path>.*/(?P<library_name>.+)\.aplibrary)/(?P<is>\w+)/"),
+    'apvault': re.compile(r"(?P<library_path>.*/(?P<library_name>.+)\.apvault)/(?P<is>\w+)/"),
+    'iphoto': re.compile(r"(?P<library_path>.*/(?P<library_name>iPhoto Library( #\d)?))/(?P<is>(s)?\w+)/"),
+    'photoslibrary': re.compile(r"(?P<library_path>.*/(?P<library_name>.+)\.photo(s)?library)/(?P<is>(s)?\w+)/"),
+    'photoslibraryProxies': re.compile(r"(?P<library_path>.*/(?P<library_name>.+)\.photo(s)?library)/resources/(?P<is>proxies)/"),
+    'lrlibrary': re.compile(r"(?P<library_path>.*/(?P<library_name>.+)\.lrlibrary/.*)/(?P<is>originals)/"),
+    'lightroom': re.compile(r"(?P<library_path>.*/(?P<library_name>Lightroom( \w+)?)/.*)/(?P<is>originals)/"),
+}
 
 
 def clean_name(image):
+    global RE_FILE_IS
     base_name = os.path.basename(image)
     name, ext = splitext(base_name)
     image_name = {
@@ -16,34 +39,38 @@ def clean_name(image):
         'thumbnail': False,
         'copy in name': False,
         'copy subfix': False,
-        'face': False
+        'face': False,
+        'temp': False,
     }
 
-    is_thumb = re.compile(r"^thumb_", re.IGNORECASE)
-    is_copy_of = re.compile(r"^Copy (\([1-9]\) )?of ", re.IGNORECASE)
-    is_face = re.compile(r".*_face[0-9]+$", re.IGNORECASE)
-    is_copy = re.compile(r".*(_[1-9])+$", re.IGNORECASE)
-    is_duplicate = re.compile(r".* \([1-9]\)$", re.IGNORECASE)
+    # DISCARD - Don't clean up
+    if RE_FILE_IS['temp'].match(name):
+        image_name['temp'] = True
 
-    if is_thumb.match(name):
-        name = is_thumb.sub('', name)
+    if RE_FILE_IS['_n'].match(name):
+        image_name['temp'] = True
+
+    if RE_FILE_IS['thumb'].match(name):
         image_name['thumbnail'] = True
 
-    if is_copy_of.match(name):
-        name = is_copy_of.sub('', name)
+    if RE_FILE_IS['face'].match(name):
+        image_name['face'] = True
+
+    # KEEP
+    if RE_FILE_IS['copy_of'].match(name):
+        name = RE_FILE_IS['copy_of'].sub('', name)
         image_name['copy in name'] = True
 
-    if is_copy.match(name):
+    if RE_FILE_IS['copy'].match(name):
         name = re.sub(r'(_[1-9])+$', '', name)
         image_name['copy subfix'] = True
 
-    if is_face.match(name):
-        name = re.sub(r'_face[0-9]+$', '', name)
-        image_name['face'] = True
-
-    if is_duplicate.match(name):
+    if RE_FILE_IS['duplicate'].match(name):
         name = re.sub(r' \([1-9]\)$', '', name)
         image_name['copy subfix'] = True
+
+    if RE_FILE_IS['double_extention'].match(name):
+        name = re.sub(r'\..{3}$', '', name)
 
     image_name['name'] = name
 
@@ -62,16 +89,13 @@ def library(path):
         'is_proxy': False
     }
 
-    aplibrary = re.match(r"(?P<library_path>.*/(?P<library_name>.+)\.aplibrary)/(?P<is>\w+)/", path)
-    apvault = re.match(r"(?P<library_path>.*/(?P<library_name>.+)\.apvault)/(?P<is>\w+)/", path)
-
-    iphoto = re.match(r"(?P<library_path>.*/(?P<library_name>iPhoto Library( #\d)?))/(?P<is>(s)?\w+)/", path)
-
-    photoslibrary = re.match(r"(?P<library_path>.*/(?P<library_name>.+)\.photo(s)?library)/(?P<is>(s)?\w+)/", path)
-    photoslibraryProxies = re.match(r"(?P<library_path>.*/(?P<library_name>.+)\.photo(s)?library)/resources/(?P<is>proxies)/", path)
-
-    lrlibrary = re.match(r"(?P<library_path>.*/(?P<library_name>.+)\.lrlibrary/.*)/(?P<is>originals)/", path)
-    lightroom = re.match(r"(?P<library_path>.*/(?P<library_name>Lightroom( \w+)?)/.*)/(?P<is>originals)/", path)
+    aplibrary = RE_LIBRARY['aplibrary'].match(path)
+    apvault = RE_LIBRARY['apvault'].match(path)
+    iphoto = RE_LIBRARY['iphoto'].match(path)
+    photoslibrary = RE_LIBRARY['photoslibrary'].match(path)
+    photoslibraryProxies = RE_LIBRARY['photoslibraryProxies'].match(path)
+    lrlibrary = RE_LIBRARY['lrlibrary'].match(path)
+    lightroom = RE_LIBRARY['lightroom'].match(path)
 
     if aplibrary:
         library['library_type'] = "aplibrary"
