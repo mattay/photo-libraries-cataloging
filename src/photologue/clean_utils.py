@@ -2,17 +2,6 @@
 import os
 
 
-def original_date(date_time: str) -> object:
-    date = '    :  :  '
-    if date_time == '-':
-        pass
-    elif date_time == '    :  :     :  :':
-        pass
-    elif date_time:
-        date = date_time[:10]
-    return date
-
-
 def group_by_paths(files: list) -> dict[str, dict]:
     """
     Looking for raw files with matching jpeg file in same directory
