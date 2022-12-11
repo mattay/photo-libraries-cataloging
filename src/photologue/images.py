@@ -2,7 +2,8 @@
 
 from photologue.catalogue import Catalogue
 from photologue.clean import Clean
-from photologue.files import clean_name, library
+from photologue.images_utils import group_files_by_image_date
+from photologue.files import clean_name, extract_library, is_desired
 
 import logging
 import re
@@ -19,6 +20,7 @@ class Images:
         self.CATALOGUE = Catalogue(indexing_cabinate)
         self.CLEAN = Clean(cleanup['preferred'], cleanup['ignore'], cleanup['camera_rules'])
         self.raw_extentions = raw_extentions
+        self.cleanup = cleanup
 
     def __list(self) -> list[str]:
         images = self.CATALOGUE.images()
@@ -117,19 +119,14 @@ class Images:
         """
         FIXME: Document what's going on here
         """
-        lib = library(image_path)
+        library = extract_library(image_path)
+        file = clean_name(image_path)
 
-        if lib['library_type'] is None or lib['is'] in ['is_master', 'is_original']:
-            image = clean_name(image_path)
-
-            if image['thumbnail'] or image['face']:
-                pass  # Ignore
-
-            else:
-                image['raw_image'] = True if image['extention'] in self.raw_extentions else False
-                self.CATALOGUE.add_file(image)
-                self.CATALOGUE.add_library(image_path, lib)
-                return image_path
+        if is_desired(file, library):
+            file['raw_image'] = True if file['extention'] in self.raw_extentions else False
+            self.CATALOGUE.add_file(file)
+            self.CATALOGUE.add_library(image_path, library)
+            return image_path
 
         elif lib['is'] not in ['is_preview', 'is_thumbnail', 'is_proxy', 'is_resource']:
             pass  # Ignore
