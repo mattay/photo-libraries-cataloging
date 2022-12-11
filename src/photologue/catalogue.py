@@ -102,9 +102,9 @@ class Catalogue:
         self.cur.execute('''--sql
             CREATE TABLE IF NOT EXISTS realationships
             (
-                file_path text,
-                is_a text,
-                of_file_path text,
+                file_path text NOT NULL,
+                is_a text NOT NULL,
+                of_file_path text DEFAULT EMPTY,
                 FOREIGN KEY(file_path) REFERENCES file(file_path) ON DELETE CASCADE,
                 FOREIGN KEY(of_file_path) REFERENCES file(file_path) ON DELETE CASCADE,
                 UNIQUE(file_path, is_a, of_file_path)
