@@ -305,7 +305,7 @@ class Clean:
                     break
 
         if not image_master_file:
-            self.LOGGER.error(f'[Prefered Master] - No master file identified')
+            self.LOGGER.error('[Prefered Master] - No master file identified')
             list_files('Prefered Master', files)
             pass
 
