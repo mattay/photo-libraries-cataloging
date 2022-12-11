@@ -143,6 +143,20 @@ class Catalogue:
         self.cur.execute(query)
         self.save()
 
+    def __call(self, query: str) -> None:
+        try:
+            with self.conn:
+                self.cur.execute(query)
+
+        except sqlite3.Warning as w:
+            self.logger.warn("Warning occurred: ", w)
+            self.logger.warn("Query: ", query)
+
+        except sqlite3.Error as e:
+            self.logger.error("Error occurred: ", e)
+            self.logger.error("Query: ", query)
+            exit(1)
+
     def __add(self, query: str, data) -> None:
         # TODO:
         try:
@@ -331,6 +345,12 @@ class Catalogue:
             file_path, is_a, of_file_path
         )
         self.__add(query, data)
+
+    def clear_relationship(self) -> None:
+        query = """--sql
+            delete from realationships;
+        """
+        self.__call(query)
 
     #
     # Requests
