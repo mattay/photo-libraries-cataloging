@@ -360,15 +360,15 @@ class Catalogue:
         query = """--sql
             SELECT DISTINCT f.file_name
             FROM file f
-            ORDER BY file_name;
+            ORDER BY f.file_name;
             """
         return self.__request_list(query)
 
     def image_paths(self, image) -> list[str]:
         query = """--sql
-            SELECT file_path
-            FROM file
-            WHERE file_name=:file_name;
+            SELECT f.file_path
+            FROM file f
+            WHERE f.file_name=:file_name;
         """
         return self.__request_list(query, {"file_name": image})
 
@@ -425,11 +425,13 @@ class Catalogue:
             SELECT
                 e.camera_model,
                 e.date_time_original,
+                e.date_time_modifed,
                 f.file_name,
                 f.checksum,
                 f.size,
                 f.file_extention,
                 f.has_copy_in_subfix,
+                f.has_copy_in_name,
                 f.file_path,
                 e.quality,
                 e.software,
