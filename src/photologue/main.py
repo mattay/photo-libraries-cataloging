@@ -70,9 +70,9 @@ def setup() -> None:
 
         fileConfig(logger_ini, defaults={'path': path, 'date': date, 'command': command})
         LOGGER = getLogger()
-        LOGGER.info(f"Version: {ABOUT['__version__']}")
-        LOGGER.info(f"Command: {command}")
-        LOGGER.info(f"Mode: {mode}")
+        LOGGER.debug(f"Version: {ABOUT['__version__']}")
+        LOGGER.debug(f"Command: {command}")
+        LOGGER.debug(f"Mode: {mode}")
 
     # Configuration
     if not os.path.exists(config_yml):
@@ -81,7 +81,7 @@ def setup() -> None:
     else:
         with open(config_yml, "r") as yamlfile:
             CONFIG = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            LOGGER.info(f'Loading configuration file successful - {config_yml}')
+            LOGGER.debug(f'Loading configuration file successful - {config_yml}')
 
     # Check config for expected values
     for v in ['import', 'cleanup', 'raw_extentions']:
