@@ -32,7 +32,7 @@ def group_by_checksum(files: list, filter_out_tag: str = '') -> dict[str, list]:
     return results
 
 
-def raw_plus_checksums(paired: dict) -> dict[str, dict]:
+def group_by_raw_plus_checksums(paired: dict) -> dict[str, dict]:
     r_checksums: dict[str, list] = {}
     j_checksums: dict[str, list] = {}
 

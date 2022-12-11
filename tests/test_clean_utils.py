@@ -67,5 +67,5 @@ def test__group_by_paths(test__group_by_paths, expected_pairs):
     })),
     (DMC_LX3_P1000847_group_by_paths, DMC_LX3_P1000847_raw_plus_checksum)
 ])
-def test__raw_plus_checksums(test__raw_plus_checksum, expected_pairs):
-    assert raw_plus_checksums(test__raw_plus_checksum) == expected_pairs
+def test__group_by_raw_plus_checksums(test__raw_plus_checksum, expected_pairs):
+    assert group_by_raw_plus_checksums(test__raw_plus_checksum) == expected_pairs
