@@ -7,9 +7,7 @@ Usage:
 
 """
 from typing import Any
-
 import os
-
 # File readers
 import yaml
 from docopt import docopt
@@ -61,11 +59,9 @@ def main():
     global CONFIG
 
     # Handle args thanks to DocOpt
-    arguments = docopt(__doc__, version=ABOUT['__version__'])
-    # pprint(arguments)
+    arguments = docopt(__doc__, version=ABOUT['__version__'])  # type: ignore
 
-    ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules'])
+    ABOUT['command'] = pick_args(arguments, ['paths', 'extentions'])
 
     setup()
 
