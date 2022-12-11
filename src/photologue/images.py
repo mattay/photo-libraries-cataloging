@@ -30,43 +30,78 @@ class Images:
             in self.__list()
         }
 
-    def XX_list_catorgoried(self) -> dict:
+    def list_catorgoried(self) -> dict[str, list]:
+
         types: dict[str, list] = {
-            'dsc': [],
-            '_dsc': [],
-            'imgp': [],
-            'img_': [],
-            'gopr': [],
-            'p': [],
-            'igp': [],
+            '########-####-####-####-############': [],
+            '#_o': [],
+            '*_n': [],
+            '_**_*****': [],
+            '_dsc****': [],
+            '_igp****': [],
+            'dsc*****': [],
+            'formal*****': [],
+            'gopr****': [],
+            'img_****': [],
+            'imgp****': [],
+            'n*': [],
+            'number': [],
+            'p*******': [],
+            '._*': [],
             'other': []
         }
 
         for image in self.__list():
+            number = re.match(r'^\d+$', image)
             dsc = re.match(r'^DSC\d{5}', image) 		# DSC00857
             _dsc = re.match(r'^_DSC\d{4}', image)		# _DSC1990
             imgp = re.match(r'^IMGP\d{4}', image)		# IMGP0001
             img_ = re.match(r'^IMG_\d{4}', image)		# IMG_1890
             gopr = re.match(r'^GOPR\d{4}', image)		# GOPR0023
-            p = re.match(r'^P\d{7}', image)					# P1000920
-            igp = re.match(r'^_IGP\d{4}', image)		# _IGP0014
+            p = re.match(r'^P\d{7}', image)	            # P1000920
+            igp = re.match(r'^_IGP\d{4}', image)        # _IGP0014
+            _n = re.match(r'^(\d+_)+n$', image)		    # 162617_10150095509069265_524009264_5821937_4498810_n
+            _o = re.match(r'^(\w+_)+o$', image)		    # 243376_10150219436364265_524009264_6908391_1266382_o
+            n = re.match(r'^n(\d+_)+\d+', image)        # n737368239_1619563_2369516
+            _d = re.match(r'^_[\d_]\d_\d{5}', image)        # '_10_00030'
+            # UID = re.match(r'^([A-Z0-9]+-)+([A-Z0-9]+)', image)  # '0BED3F79-451F-4452-83F0-030560A6DAD3',
+            formal = re.match(r'^Formal\d{5}_jpg', image)  # Formal10014_jpg
 
-            if dsc:
-                types['dsc'].append(image)
+            tmp_ = re.match(r'^\._', image)		# ._IMG_1890 .__IGP9999
+
+            if number:
+                types['number'].append(image)
+            elif dsc:
+                types['dsc*****'].append(image)
             elif _dsc:
-                types['_dsc'].append(image)
+                types['_dsc****'].append(image)
             elif imgp:
-                types['imgp'].append(image)
+                types['imgp****'].append(image)
             elif img_:
-                types['img_'].append(image)
+                types['img_****'].append(image)
             elif gopr:
-                types['gopr'].append(image)
+                types['gopr****'].append(image)
             elif p:
-                types['p'].append(image)
+                types['p*******'].append(image)
             elif igp:
-                types['igp'].append(image)
+                types['_igp****'].append(image)
+            elif _n:
+                types['*_n'].append(image)
+            elif _o:
+                types['#_o'].append(image)
+            elif n:
+                types['n*'].append(image)
+            elif _d:
+                types['_**_*****'].append(image)
+            # elif UID:
+            #     types['########-####-####-####-############'].append(image)
+            elif formal:
+                types['formal*****'].append(image)
+            elif tmp_:
+                types['._*'].append(image)
             else:
                 types['other'].append(image)
+                print(image)
 
         return types
 

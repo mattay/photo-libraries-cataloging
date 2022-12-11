@@ -6,6 +6,7 @@ Usage:
     main.py missing (checksums|exifs|stats) [--print0]
     main.py mappings [--verbose]
     main.py rules
+    main.py summary
     main.py (-h | --help)
     main.py --version
     main.py --verbose
@@ -222,6 +223,18 @@ def mapping() -> None:
     pass
 
 
+def summary():
+    global IMAGES
+    total = 0
+
+    image_types = IMAGES.list_catorgoried()
+    for pattern, image_names in image_types.items():
+        print(f'{pattern:>40} {len(image_names):>8,}')
+        total += len(image_names)
+    print(f'{"":=>40} {"":=>8}')
+    print(f'{"TOTAL":>40} {total:>8,}')
+
+
 def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
     for arg in arguments.keys():
         if arguments[arg] and arg in valid_options:
@@ -236,12 +249,12 @@ def pick_args(arguments: dict = {}, valid_options: list = []) -> str | None:
 
 def main():
     global ABOUT
-  
+
     # Handle args thanks to DocOpt
-    arguments = docopt(__doc__, version=ABOUT['__version__'])
+    arguments = docopt(__doc__, version=ABOUT['__version__'])  # type: ignore
 
     ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules'])
+    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules', 'summary'])
     ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
 
     setup()
@@ -261,6 +274,9 @@ def main():
 
     if command == 'mappings':
         mapping()
+
+    if command == 'summary':
+        summary()
 
 
 if __name__ == '__main__':

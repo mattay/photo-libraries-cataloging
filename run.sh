@@ -192,6 +192,11 @@ command_test() {
   pipenv run pytest  
 }
 
+command_summary() {
+  echo "Sumamry"
+  pipenv run python ${APP_MAIN} summary
+}
+
 
 main_help() {
   echo "run.sh <COMMAND>"
@@ -202,6 +207,7 @@ main_help() {
   echo $'\tlint'
   echo $'\ttest'
   echo $'\tcleanup'
+  echo $'\tsummary'
 }
 
 
@@ -227,6 +233,10 @@ main() {
   elif [[ $COMMAND == "cleanup" ]]
   then
     command_cleanup
+
+  elif [[ $COMMAND == "summary" ]]
+  then
+    command_summary
 
   else
     main_help
