@@ -110,6 +110,11 @@ class Catalogue:
                 UNIQUE(file_path, is_a, of_file_path)
             );
         ''')
+        #  indexes
+        self.cur.execute('''--sql
+            CREATE INDEX IF NOT EXISTS
+                idx_realationships_is_a ON realationships (is_a);
+        ''')
 
         # Clean up dirty Data before use
         self.__clean_up()
