@@ -4,20 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-configparser = "*"
-docopt = "*"
-PyYAML = "*"
+configparser = "==5.3.0"
+docopt = "==0.6.2"
+PyYAML = "==6.0"
 photologue = {editable = true, path = "."}
 
 [dev-packages]
+autopep8 = "==2.0.0"
 flake8 = "==6.0.0"
 mypy = "==0.991"
 pytest = "==7.2.0"
 pytest-cov = "==4.0.0"
+pytest-watch = "==4.2.0"
 snakeviz = "==2.1.1"
 tox = "==3.27.1"
-pytest-watch = "*"
-autopep8 = "*"
+wheel = "==0.38.1"
 
 [requires]
 python_version = "3.10"
