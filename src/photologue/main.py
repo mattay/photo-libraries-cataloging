@@ -18,7 +18,7 @@ Options:
     --sample
 """
 from docopt import docopt
-from typing import Any
+from typing import Any, Pattern
 
 import os
 import sys
@@ -102,89 +102,112 @@ def setup() -> None:
     # Images class
     IMAGES = Images(
         indexing_cabinate,
-        CONFIG.get('import').get('raw_extentions'),
+        CONFIG.get('raw_extentions'),
         CONFIG.get('cleanup')
     )
 
 
 def collect(mode: str | None = None) -> None:
     global LOGGER
-    counter = 0
+    counter_files: int = 0
+    counter_keep: int = 0
+    counter_ignored: int = 0
+
+    incomingPattern: dict[str, Pattern] = {
+        'checksums': re.compile(r'''^(?P<checksum>[0-9]+) (?P<octets>[0-9]+) (?P<file_path>.+)'''),
+        'exifs': re.compile(r'''
+            ^(?P<date_time_original>.+)
+            \t(?P<date_time_modifed>.+)
+            \t(?P<camera_make>.+)
+            \t(?P<camera_model>.+)
+            \t(?P<color_space>.+)
+            \t(?P<x_resolution>.+)
+            \t(?P<y_resolution>.+)
+            \t(?P<resolution_unit>.+)
+            \t(?P<quality>.+)
+            \t(?P<image_height>.+)
+            \t(?P<image_width>.+)
+            \t(?P<software>.+)
+            \t(?P<file_path>.+)
+        ''', re.VERBOSE),
+        'stats': re.compile(r'''
+            ^(?P<size>.+)
+            \t(?P<birth>.+)
+            \t(?P<change>.+)
+            \t(?P<modified>.+)
+            \t(?P<accessed>.+)
+            \t(?P<file_path>.+)
+        ''', re.VERBOSE),
+    }
 
     LOGGER.info(f'Collecting {mode}')
     for file in sys.stdin:
+        counter_files += 1
+        file = file.rstrip('\n')
         #
         # Files
         #
         if mode == 'files':
-            collected = IMAGES.add_file(file.rstrip('\n'))
-            counter += 1 if collected else 0
+            collected = IMAGES.add_file(file)
+            if collected:
+                counter_keep += 1
+            else:
+                counter_ignored += 1
 
         #
         # Stats
         #
         if mode == 'stats':
-            incoming = re.match(r"^(?P<size>.+)\t(?P<birth>.+)\t(?P<change>.+)\t(?P<modified>.+)\t(?P<accessed>.+)\t(?P<file_path>.+)\n", file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-                IMAGES.add_stats(incoming.group('file_path'), {
-                    'size': incoming.group('size'),
-                    'birthtime': incoming.group('birth'),
-                    'ctime': incoming.group('change'),
-                    'mtime': incoming.group('modified'),
-                    'atime': incoming.group('accessed')
-                })
+                counter_keep += 1
+                IMAGES.add_stats(
+                    incoming.group('file_path'),
+                    {
+                        'size': incoming.group('size'),
+                        'birthtime': incoming.group('birth'),
+                        'ctime': incoming.group('change'),
+                        'mtime': incoming.group('modified'),
+                        'atime': incoming.group('accessed')
+                    }
+                )
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No stats found for {file}')
 
         #
         # EXIFs
         #
         if mode == 'exifs':
-            incomingPattern = re.compile(r'''
-        ^(?P<date_time_original>.+)
-        \t(?P<date_time_modifed>.+)
-        \t(?P<camera_make>.+)
-        \t(?P<camera_model>.+)
-        \t(?P<color_space>.+)
-        \t(?P<x_resolution>.+)
-        \t(?P<y_resolution>.+)
-        \t(?P<resolution_unit>.+)
-        \t(?P<quality>.+)
-        \t(?P<image_height>.+)
-        \t(?P<image_width>.+)
-        \t(?P<software>.+)
-        \t(?P<file_path>.+)
-        \n
-      ''', re.VERBOSE)
-            incoming = incomingPattern.match(file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-
+                counter_keep += 1
                 cleaned = clean_exif(incoming)
                 IMAGES.add_exif(
                     cleaned['file_path'],
                     cleaned
                 )
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No exifs found for {file}')
         #
         # Checksums
         #
         if mode == 'checksums':
-            incoming = re.match(r"^(?P<checksum>[0-9]+) (?P<octets>[0-9]+) (?P<file_path>.+)\n", file)
+            incoming = incomingPattern[mode].match(file)
             if incoming:
-                counter += 1
-                IMAGES.add_checksum(incoming.group('file_path'), incoming.group('checksum'))
+                counter_keep += 1
+                IMAGES.add_checksum(
+                    incoming.group('file_path'),
+                    incoming.group('checksum')
+                )
 
             else:
+                counter_ignored += 1
                 LOGGER.warn(f'No checksums found for {file}')
 
-    print(f'{counter} {mode}')
-
-
-
-
+    percentage = '-' if counter_files == 0 else f'{counter_keep/counter_files*100:.0f}%'
+    print(f'[{mode}] {counter_files:>9,} files\tKeep:{counter_keep:>8,}\tIgnored:{counter_ignored:>8,}\t\t{percentage}')
 
 
 def missing(mode: str | None, line_ending: str = "\n") -> None:
