@@ -77,7 +77,20 @@ def clean_name(image):
     return image_name
 
 
-def library(path):
+def clean_exif(file) -> dict:
+    cleaned = {}
+    for tag, value in file.groupdict().items():
+        if tag == 'camera_make' and value == '-':
+            value = 'unknown'
+        if tag == 'camera_model' and value == '-':
+            value = 'unknown'
+
+        cleaned[tag] = None if value == '-' else value
+
+    return cleaned
+
+
+def extract_library(path):
     library = {
         'library_type': None,
         'library_name': None,
