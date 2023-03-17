@@ -1,5 +1,9 @@
 import:
   volumes:
+    Dropbox:
+      - /Users/matthew/Dropbox/Photos/Photos from iPhoto
+      - /Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)
+      - /Users/matthew/Dropbox/Photos/SceenSaver
     Jedi:
       - /Volumes/Jedi/ApertureLibraryBackups
       - /Volumes/Jedi/CLEANUP
@@ -201,6 +205,13 @@ cleanup:
             file_extention: .PEF
             modified: 0
             quality: RAW
+        - condition: checksums
+          matches:
+          action: ignore
+          file_props:
+            file_extention: .jpg
+            modified: 1
+            software: Aperture 3.5.1
 
     DMC-LX3:
       Owner: Matthew Anderson
@@ -236,6 +247,12 @@ cleanup:
             modified: 0
             software: Ver.1.2
             has_copy_in_subfix: 0
+        - condition: checksum duplicate images
+          matches:
+          action: ignore
+          file_props:
+            library_type: photoslibrary
+            file_extention: .jpeg
 
     iPhone 4S:
       Owner: Matthew Anderson
