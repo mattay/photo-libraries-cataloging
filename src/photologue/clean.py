@@ -1,5 +1,5 @@
 import logging
-# from pprint import pprint
+from pprint import pprint
 from photologue.clean_utils import (
     group_by_checksum,
     group_by_paths,
@@ -20,6 +20,35 @@ class Clean:
         self.camera_rules = camera_rules
         self.preferred = preferred
         self.ignore = ignore
+
+    def cleanup_images(self, files: list) -> None:
+        checksums: dict[str, list] = group_by_checksum(files)
+
+        for checksum, files in checksums.items():
+            cameras = set()
+            images = set()
+            for f in files:
+                cameras.add(f['camera_model'])
+                images.add(f['file_name'])
+
+            if len(cameras) > 1:
+                print(f'ERROR - Multiple Cameras for checksum {checksum}')
+                break
+
+            camera = next(iter(cameras), None)
+            if 'DMC-LX3' in cameras:
+                results = self.__filter_camera_files(camera, 'checksum duplicate images', '', files)
+                pass
+            elif 'PENTAX K10D' in cameras:
+                list_files('checksum duplicate images', files)
+                pass
+            elif 'Canon DIGITAL IXUS 500' in cameras:
+                pass
+            elif 'iPhone 4S' in cameras:
+                pass
+            else:
+                pprint(files, width=256)
+                pass
 
     def process_camera_image_files(self, camera: str, image: str, files: list[dict]) -> list:
         results = []
@@ -125,6 +154,8 @@ class Clean:
                 results.append(r)
 
             else:
+                self.LOGGER.error(f'[Mutiple Extentions] -> Multiple Checksums {list(extentions)}')
+
                 multiple_checksums = self.__multiple_checksums(camera, image, files)  # __multiple_checksums filters files too.
 
                 if len(multiple_checksums) == 1:
@@ -328,6 +359,8 @@ class Clean:
 
             for f in files:
                 path = f['file_path']
+                if f['copy']:
+                    continue  # Ignore copies
 
                 if preferred in path:
                     image_master_file = path
