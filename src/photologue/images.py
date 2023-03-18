@@ -2,7 +2,7 @@
 
 from photologue.catalogue import Catalogue
 from photologue.clean import Clean
-from photologue.images_utils import group_files_by_image_date
+from photologue.images_utils import file_add_props, group_files_by_image_date
 from photologue.files import clean_name, extract_library, is_desired
 
 import logging
@@ -262,3 +262,11 @@ class Images:
             f"TOTAL      {totals['unresolved']:>4,}",
             f"TOTAL{totals['opps']:>7,}"
         ]))
+
+    def cleanup_images(self) -> None:
+        files = [
+            file_add_props(file)
+            for file
+            in self.CATALOGUE.checksums_duplicate_images()
+        ]
+        self.CLEAN.cleanup_images(files)

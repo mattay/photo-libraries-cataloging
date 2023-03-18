@@ -7,6 +7,7 @@ Usage:
     main.py mappings [--verbose]
     main.py rules
     main.py summary
+    main.py cleanup
     main.py (-h | --help)
     main.py --version
     main.py --verbose
@@ -222,6 +223,12 @@ def rules() -> None:
     IMAGES.process_images()
 
 
+def checksum_duplicate_image_names() -> None:
+    global LOGGER, IMAGES
+    LOGGER.info('Checksums with duplicate image names')
+    IMAGES.cleanup_images()
+
+
 def mapping() -> None:
     # 	pprint('Mappings')
     # mappings = Mappings()
@@ -269,7 +276,7 @@ def main():
     arguments = docopt(__doc__, version=ABOUT['__version__'])  # type: ignore
 
     ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules', 'summary'])
+    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules', 'summary', 'cleanup'])
     ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
 
     setup()
@@ -292,6 +299,9 @@ def main():
 
     if command == 'summary':
         summary()
+
+    if command == 'cleanup':
+        checksum_duplicate_image_names()
 
 
 if __name__ == '__main__':
