@@ -65,10 +65,10 @@ def group_by_raw_plus_checksums(paired: dict) -> dict[str, dict]:
 
 def list_files(group: str, files: list):
     print(group)
-    print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  COLOURSPACE  FILE PATH")
-    print("  ---------- ---------- - ------------ - ---------------- -------- ------------ ------------------------------------------------")
+    print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  LIB TYPE  FILE PATH")
+    print("  ---------- ---------- - ------------ - ---------------- -------- -------- ------------------------------------------------")
     [print(f"  {file['image_date']} {file['mod_date']} {file['modified']} {file['checksum']:>12} {file['copy']}" +
-           f" {str(file['software']):<16} {str(file['quality']):<8} {str(file['color_space']):<12} {file['file_path']}")
+           f" {str(file['software']):<16} {str(file['quality']):<8} {str(file['library_type']):<12} {file['file_path']}")
         for file
         in sorted(files, key=lambda d: d['checksum'])
      ]
