@@ -7,7 +7,6 @@ from photologue.files import clean_name, extract_library, is_desired
 
 import logging
 import re
-# from pprint import pprint
 
 
 class Images:
@@ -59,17 +58,17 @@ class Images:
 
         for image in self.__list():
             number = re.match(r'^\d+$', image)
-            dsc = re.match(r'^DSC\d{5}', image) 		# DSC00857
+            dsc = re.match(r'^DSC\d{5}$', image) 		# DSC00857
             _dsc = re.match(r'^_DSC\d{4}', image)		# _DSC1990
-            imgp = re.match(r'^IMGP\d{4}', image)		# IMGP0001
-            img_ = re.match(r'^IMG_\d{4}', image)		# IMG_1890
-            gopr = re.match(r'^GOPR\d{4}', image)		# GOPR0023
-            p = re.match(r'^P\d{7}', image)	            # P1000920
-            igp = re.match(r'^_IGP\d{4}', image)        # _IGP0014
+            imgp = re.match(r'^IMGP\d{4}$', image)		# IMGP0001
+            img_ = re.match(r'^IMG_\d{4}$', image)		# IMG_1890
+            gopr = re.match(r'^GOPR\d{4}$', image)		# GOPR0023
+            p = re.match(r'^P\d{7}$', image)	        # P1000920
+            igp = re.match(r'^_IGP\d{4}$', image)       # _IGP0014
             _n = re.match(r'^(\d+_)+n$', image)		    # 162617_10150095509069265_524009264_5821937_4498810_n
             _o = re.match(r'^(\w+_)+o$', image)		    # 243376_10150219436364265_524009264_6908391_1266382_o
             n = re.match(r'^n(\d+_)+\d+', image)        # n737368239_1619563_2369516
-            _d = re.match(r'^_[\d_]\d_\d{5}', image)        # '_10_00030'
+            _d = re.match(r'^_[\d_]\d_\d{5}$', image)   # '_10_00030'
             # UID = re.match(r'^([A-Z0-9]+-)+([A-Z0-9]+)', image)  # '0BED3F79-451F-4452-83F0-030560A6DAD3',
             formal = re.match(r'^Formal\d{5}_jpg', image)  # Formal10014_jpg
 
@@ -141,7 +140,11 @@ class Images:
         summary = []
         self.CATALOGUE.clear_relationship()
         for camera in self.CATALOGUE.cameras():
-            camera_files = self.CATALOGUE.camera_files(camera)
+            camera_files = [
+                file_add_props(file)
+                for file
+                in self.CATALOGUE.camera_files(camera)
+            ]
             collected = group_files_by_image_date(camera_files)
             s = {
                 'camera': camera,
@@ -222,7 +225,7 @@ class Images:
             'unresolved': 0,
             'opps': 0
         }
-        
+
         self.LOGGER.info("Process Summary")
         for s in summary:
             oops = s['countof']['files']
