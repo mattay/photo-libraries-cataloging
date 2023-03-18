@@ -1,34 +1,149 @@
 # photo-libraries-cataloging
 
-## Setup
+# Setup
 Install required tool and python libraries.
 
 Using Homebrew we'll install:
-- exiftool (Image metadata extraction)
-- sqlite
+- [exiftool](https://exiftool.org) - Image metadata extraction (Perl)
+- [sqlite](https://www.sqlite.org) Local file based SQL database
+- [pcre](https://www.pcre.org) regex for sqlite
+- [pipenv](https://pipenv.pypa.io) virtural enviroment (Python)
 
 ```bash
-brew install ExifTool sqlite pipenv
+brew install ExifTool sqlite pcre pipenv
 ```
 
-### Enabling Foreign Key Support
-Run the following SQL statement in SQLite to enable foreign keys needed to optimize data fetching.
+## SQLite configuration
+Enable Support for regex
+
+```bash
+git clone https://github.com/ralight/sqlite3-pcre.git
+cd sqlite3-pcre
+cc -shared -o pcre.so -I/usr/local/opt/pcre/include  -fPIC -W -Werror pcre.c -L/usr/local/opt/pcre/lib -lpcre
+echo ".load '`pwd`/pcre.so'" >> ~/.sqliterc
+```
+
+Enable Support foreign key constrats.
+
+Run the following `SQL` statement in SQLite to enable foreign keys needed to optimize data fetching.
 ```sql
 PRAGMA foreign_keys = ON;
 ```
 
-### Python setup
+## Python setup
 ```bash
 pipenv install -e .
 pipenv install -r requirements_dev.txt
 ```
 
-## Running 
-```bash
-./run
+
+# Running 
+
+## Configure
+Rules are configured in `./config.xml`
+
+```yml
+import:
+    volumes:
+        # <volume name>:
+            # - Volume paths to include in searches
+        Jedi:
+            - /Volumes/Jedi/ApertureLibraryBackups
+            - /Volumes/Jedi/Photos
+    extentions:
+        # - file extentions in include in searches
+        - .PEF
+        - .DNG
+        - .RW2
+        - .jpg
+        - .JPG
+        - .jpeg
+    ignore:
+        # - partial regex match in a file path to ignore
+        - /Previews/
+        - _n.jpg
+        - _o.jpg
+        - \.__IGP
+        - '[T|t]humb'
+
+raw_extentions:
+  - .PEF
+  - .DNG
+  - .RW2
+
+cleanup:
+  preferred:
+    # images in these paths (or file) are preferenced when picking a master to keep
+    paths:
+        - path
+    files:
+        - filepath
+  
+  ignore:
+    # images in these paths (or file) we don't care to keep.
+    paths:
+        - path
+    files:
+        - filepath
+
+  camera_rules:
+    # list of camera models
+    <camera model>:
+      # Optional Note Properties
+      Owner: owner name
+      Location: Church
+      Content: Wedding
+      Action Steps: Check Dropbox for duplicates
+      Plan: 
+      Notes: Ignore exports
+      # Filtering conditions
+      filters:
+        # Ordered list of perfered conditions to match on 
+        # options -> extentions | checksums
+        - condition: extentions
+        # if extention, list the set of extentions
+        - matches: !!set {.JPG, .jpg}
+        # Action to take for matching the condition. 
+        # options -> keep | ignore
+        - action: keep
+        # list of optional file properties to match on
+        file_props:
+          file_extention: .JPG
+          quality: Best
+          software: Ver 1.00
+          modified: 0
+          has_copy_in_subfix: 0
+          mod_date:
+
 ```
 
-## Notes
+## Processing
+Commands
+- **collect** Find image files and colllect info  
+- **process**
+- **clearlogs** Deletes all log files
+- **summary** Stats on file patterns in collection
+```bash
+./run <command>
+```
+
+# Developmnet
+Lint code
+```bash
+./run lint
+```
+
+Run unit tests
+```bash
+./run test
+```
+
+Profile code, Check run.sh to see which command is being profiled
+```bash
+./run profile
+```
+
+# Notes
 Might need to remove
 - file_path like "%/n%.jpg"
 - file_path like "%_n.jpg"
@@ -36,3 +151,21 @@ Might need to remove
 - file_path like "%.__IGP%.PEF"
 - file_path like "/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Thumbnails/%"
 - like "IMG_%.JPG" -- iPhone
+
+These files have need to be manually dealt with
+```
+/Users/matthew/Dropbox/Camera Uploads/2013-08-27 19.43.05.jpg: stat: File name too long
+```
+
+```
+stat: The man un-tying the boat is the man in the next photo.jpg: stat: No such file or directory
+```
+
+```
+stat: The man un-tying the boat is the man in the next photo_1024.jpg: stat: No such file or directory
+```
+```
+2022-12-13
+/Users/matthew/Dropbox/Camera Uploads/2013-08-27 19.43.05.jpg:
+```
+
