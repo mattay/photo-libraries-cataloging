@@ -288,15 +288,15 @@ class Catalogue:
                 INSERT OR IGNORE INTO exif
                 (
                     file_path,
-                    date_time_original ,
-                    date_time_modifed ,
-                    camera_make ,
-                    camera_model ,
-                    quality ,
-                    x_resolution ,
-                  y_resolution ,
-                    image_height ,
-                    image_width ,
+                    date_time_original,
+                    date_time_modifed,
+                    camera_make,
+                    camera_model,
+                    quality,
+                    x_resolution,
+                    y_resolution,
+                    image_height,
+                    image_width,
                     resolution_unit,
                     software,
                     color_space
@@ -436,13 +436,52 @@ class Catalogue:
                 e.quality,
                 e.software,
                 e.color_space,
-                e.date_time_modifed,
                 l.library_type,
                 l.library_name,
                 l.library_path
             FROM
                 "file" f
-                JOIN exif e ON e.file_path = f.file_path and e.camera_model = ?
-                LEFT JOIN "library" l on l.file_path = f.file_path
+                JOIN exif e
+                    ON e.file_path = f.file_path
+                    AND e.camera_model = ?
+                LEFT JOIN "library" l
+                    ON l.file_path = f.file_path
         ;"""
         return self.__request_results(query, (camera,))
+
+    def checksums_duplicate_images(self) -> list[dict]:
+        query = """--sql
+            SELECT
+                e.camera_model,
+                e.date_time_original,
+                e.date_time_modifed,
+                f.file_name,
+                f.checksum,
+                f.size,
+                f.file_extention,
+                f.has_copy_in_subfix,
+                f.has_copy_in_name,
+                f.file_path,
+                e.quality,
+                e.software,
+                e.color_space,
+                l.library_type,
+                l.library_name,
+                l.library_path
+            FROM
+                "file" f
+                JOIN exif e
+                    ON e.file_path = f.file_path
+                LEFT JOIN "library" l
+                    ON l.file_path = f.file_path
+            WHERE
+                checksum in(
+                    SELECT
+                        f.checksum FROM "file" f
+                    GROUP BY
+                        checksum
+                    HAVING
+                        count(DISTINCT file_name) > 1)
+            ORDER BY f.checksum, f.file_name
+        ;"""
+        return self.__request_results(query)
