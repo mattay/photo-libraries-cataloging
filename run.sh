@@ -156,7 +156,7 @@ collect_checksums() {
 
 
 command_collect() {
-  # find_in_paths
+  find_in_paths
   collect_stats
   collect_exif
   collect_checksums
@@ -180,13 +180,13 @@ profile_rules(){
 }
 
 
-cleanup_logs() {
+clear_logs() {
   find ./logs -name "*.log" -delete
 }
 
 
-command_cleanup  () {
-  cleanup_logs
+command_clear_logs  () {
+  clear_logs
 }
 
 
@@ -211,6 +211,11 @@ command_profile() {
   profile_find_in_paths  
 }
 
+command_cleanup() {
+  echo "Cleanup"
+  pipenv run python ${APP_MAIN} cleanup
+}
+
 command_summary() {
   echo "Sumamry"
   pipenv run python ${APP_MAIN} summary
@@ -221,12 +226,13 @@ main_help() {
   echo "run.sh <COMMAND>"
   echo ""
   echo "COMMAND"
-  echo $'\tcollect'
-  echo $'\tprocess'
-  echo $'\tlint'
-  echo $'\ttest'
   echo $'\tcleanup'
+  echo $'\tclearlogs'
+  echo $'\tcollect'
+  echo $'\tlint'
+  echo $'\tprocess'
   echo $'\tsummary'
+  echo $'\ttest'
 }
 
 
@@ -249,9 +255,9 @@ main() {
   then
     command_test
 
-  elif [[ $COMMAND == "cleanup" ]]
+  elif [[ $COMMAND == "clearlogs" ]]
   then
-    command_cleanup
+    command_clear_logs
 
   elif [[ $COMMAND == "profile" ]]
   then
@@ -260,6 +266,10 @@ main() {
   elif [[ $COMMAND == "summary" ]]
   then
     command_summary
+
+  elif [[ $COMMAND == "cleanup" ]]
+  then
+    command_cleanup
 
   else
     main_help
