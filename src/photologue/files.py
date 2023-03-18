@@ -15,6 +15,7 @@ RE_FILE_IS: dict = {
     'copy': re.compile(r".*(_[1-9])+$", re.IGNORECASE),
     'duplicate': re.compile(r".* \([1-9]\)$", re.IGNORECASE),
     'double_extention': re.compile(r".*\..{3}$", re.IGNORECASE),
+    'double_copy': re.compile(r"(_\d)+$", re.IGNORECASE),
 }
 
 RE_LIBRARY: dict = {
@@ -71,6 +72,9 @@ def clean_name(image):
 
     if RE_FILE_IS['double_extention'].match(name):
         name = re.sub(r'\..{3}$', '', name)
+
+    if RE_FILE_IS['double_copy'].match(name):
+        name = re.sub(r'(_\d)+$', '', name)
 
     image_name['name'] = name
 
