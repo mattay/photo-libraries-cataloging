@@ -22,6 +22,10 @@ cd sqlite3-pcre
 cc -shared -o pcre.so -I/usr/local/opt/pcre/include  -fPIC -W -Werror pcre.c -L/usr/local/opt/pcre/lib -lpcre
 echo ".load '`pwd`/pcre.so'" >> ~/.sqliterc
 ```
+May need to setup Apple's Developer CommandLineTools
+```bash
+xcode-select --install
+```
 
 Enable Support foreign key constrats.
 
