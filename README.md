@@ -15,13 +15,16 @@ brew install ExifTool sqlite pcre pipenv
 
 ## SQLite configuration
 Enable Support for regex
-
 ```bash
 git clone https://github.com/ralight/sqlite3-pcre.git
 cd sqlite3-pcre
-cc -shared -o pcre.so -I/usr/local/opt/pcre/include  -fPIC -W -Werror pcre.c -L/usr/local/opt/pcre/lib -lpcre
-echo ".load '`pwd`/pcre.so'" >> ~/.sqliterc
+cc -shared -o sqlite3-pcre.so -I/usr/local/opt/pcre/include -fPIC -W -Werror pcre.c -L/usr/local/opt/pcre/lib -lpcre -lsqlite3
+echo ".load '`pwd`/sqlite3-pcre.so'" >> ~/.sqliterc
 ```
+References 
+- [https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query]
+- [https://gist.github.com/janfri/a3e61731864a63554ba6f32bdc7179aa]
+
 May need to setup Apple's Developer CommandLineTools
 ```bash
 xcode-select --install
