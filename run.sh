@@ -3,6 +3,8 @@
 APP_MAIN=./src/photologue/main.py
 APP_CONFIG=./src/photologue/config.py
 
+mkdir -p logs
+
 elapsed () {
   start=$1
   end=$2
