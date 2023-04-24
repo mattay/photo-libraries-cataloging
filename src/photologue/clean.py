@@ -242,7 +242,7 @@ class Clean:
                     if f['file_path'] == r['master']:
                         paired_checksums[f['checksum']] = r['copies']
 
-            extentision: dict[str, dict] = {}
+            extentision: dict = {}
             # YES - Checksum matched a paired
             for single in singles.values():
                 for file in single.values():

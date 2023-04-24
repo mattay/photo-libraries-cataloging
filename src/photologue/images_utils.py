@@ -16,7 +16,7 @@ def file_add_props(file: dict) -> dict:
     # Calculate if file has been modified
     file['modified'] = 1 if file['image_date'] != file['mod_date'] else 0
     file['copy'] = 1 if file['has_copy_in_subfix'] or file['has_copy_in_name'] else 0
-        
+
     return file
 
 
@@ -36,7 +36,7 @@ def group_files_by_image_date(files: list[dict]) -> dict:
     collected: dict[str, dict] = {}
 
     for file in files:
-         # Add to Hhiarchy
+        # Add to Hiarchy
         i = collected.get(file['file_name'], {})
         t = i.get(file['image_date'], [])
         t.append(file)

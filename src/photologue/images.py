@@ -8,6 +8,8 @@ from photologue.files import clean_name, extract_library, is_desired
 import logging
 import re
 
+FilePath = str
+
 
 class Images:
     def __init__(
@@ -114,7 +116,7 @@ class Images:
         files = self.CATALOGUE.files(missing)
         return list(files)
 
-    def add_file(self, image_path: str) -> str | None:
+    def add_file(self, image_path: FilePath) -> str | None:
         """
         FIXME: Document what's going on here
         """
@@ -127,13 +129,15 @@ class Images:
             self.CATALOGUE.add_library(image_path, library)
             return image_path
 
-    def add_stats(self, image_path: str, filestats: dict) -> None:
+        return None
+
+    def add_stats(self, image_path: FilePath, filestats: dict) -> None:
         self.CATALOGUE.add_filestats(image_path, filestats)
 
-    def add_checksum(self, image_path: str, checksum: str) -> None:
+    def add_checksum(self, image_path: FilePath, checksum: str) -> None:
         self.CATALOGUE.add_checksum(image_path, checksum)
 
-    def add_exif(self, image_path: str, exif: dict) -> None:
+    def add_exif(self, image_path: FilePath, exif: dict) -> None:
         self.CATALOGUE.add_exif(image_path, exif)
 
     def process_images(self) -> None:
@@ -146,9 +150,7 @@ class Images:
                 in self.CATALOGUE.camera_files(camera)
             ]
             collected = group_files_by_image_date(camera_files)
-            s = {
-                'camera': camera,
-                'countof': {
+            countof = {
                     'files': len(camera_files),
                     'images': len(collected.keys()),
                     'momments': 0,
@@ -158,17 +160,20 @@ class Images:
                     'ignored': 0,
                     'unresolved': 0
                 }
-            }
 
             for image, datetimes in collected.items():
                 for momment, files in datetimes.items():
-                    s['countof']['momments'] += 1
+                    countof['momments'] += 1
+
                     processed_counts = self.process_camera_image(camera, image, files)
                     for processed, count in processed_counts.items():
-                        s['countof'][processed] += count
+                        countof[processed] += count
                     # pass
 
-            summary.append(s)
+            summary.append({
+                'camera': camera,
+                'countof': countof
+            })
         self.log_process_summary(summary)
 
     def process_camera_image(self, camera: str, image: str, files: list[dict]) -> dict:

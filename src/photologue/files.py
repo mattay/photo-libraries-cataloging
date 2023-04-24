@@ -3,6 +3,8 @@ from os.path import splitext
 
 import re
 
+FilePath = str
+
 
 RE_FILE_IS: dict = {
     # DISCARD
@@ -29,7 +31,7 @@ RE_LIBRARY: dict = {
 }
 
 
-def clean_name(image):
+def clean_name(image: FilePath) -> dict:
     global RE_FILE_IS
     base_name = os.path.basename(image)
     name, ext = splitext(base_name)
@@ -94,12 +96,12 @@ def clean_exif(file) -> dict:
     return cleaned
 
 
-def extract_library(path):
+def extract_library(path: FilePath) -> dict:
     library = {
-        'library_type': None,
-        'library_name': None,
-        'library_path': None,
-        'is': None,
+        'library_type': '',
+        'library_name': '',
+        'library_path': '',
+        'is': '',
         'is_master': False,
         'is_preview': False,
         'is_thumbnail': False,
@@ -176,7 +178,7 @@ def extract_library(path):
     return library
 
 
-def is_desired(file, library) -> bool:
+def is_desired(file: dict, library: dict) -> bool:
     desired = False
 
     if file['thumbnail'] or file['face'] or file['temp']:
