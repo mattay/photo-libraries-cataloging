@@ -45,3 +45,15 @@ def group_files_by_image_date(files: list[dict]) -> dict:
         collected[file['file_name']] = i
 
     return collected
+
+
+def group_image_creation(files: list[dict]) -> dict:
+    collected: dict[str, list] = {}
+
+    for file in files:
+        creation = file['date_time_original']
+        values = collected.get(creation, [])
+        values.append(file)
+        collected[creation] = values
+
+    return collected

@@ -2,7 +2,7 @@
 
 from photologue.catalogue import Catalogue
 from photologue.clean import Clean
-from photologue.images_utils import file_add_props, group_files_by_image_date
+from photologue.images_utils import file_add_props, group_image_creation
 from photologue.files import clean_name, extract_library, is_desired
 
 import logging
@@ -143,17 +143,22 @@ class Images:
     def process_images(self) -> None:
         summary = []
         self.CATALOGUE.clear_relationship()
+
         for camera in self.CATALOGUE.cameras():
+            self.LOGGER.info(f'Proccesing moments for {camera}')
+
+            # TODO review the need to add props to a file
             camera_files = [
                 file_add_props(file)
                 for file
                 in self.CATALOGUE.camera_files(camera)
             ]
-            collected = group_files_by_image_date(camera_files)
+            moments = group_image_creation(camera_files)
+
             countof = {
                     'files': len(camera_files),
-                    'images': len(collected.keys()),
-                    'momments': 0,
+                    'images': 0,
+                    'momments': len(moments.keys()),
                     'masters': 0,
                     'copies': 0,
                     'filtered': 0,
@@ -161,14 +166,93 @@ class Images:
                     'unresolved': 0
                 }
 
-            for image, datetimes in collected.items():
-                for momment, files in datetimes.items():
-                    countof['momments'] += 1
+            for moment, files in moments.items():
+                if not moment:
+                    # Skipping images that have no moments.
+                    self.LOGGER.warn(f'UNDEFINED MOMENTS {len(files)}')
+                    continue
 
-                    processed_counts = self.process_camera_image(camera, image, files)
-                    for processed, count in processed_counts.items():
-                        countof[processed] += count
-                    # pass
+                idx_image = []
+                idx_checksum = []
+                # image name x checksums
+                matrix = []
+                for file in files:
+                    image = file['file_name']
+                    if image not in idx_image:
+                        idx_image.append(image)
+                    i = idx_image.index(image)
+
+                    checksum = file['checksum']
+                    if checksum not in idx_checksum:
+                        idx_checksum.append(checksum)
+                    c = idx_checksum.index(checksum)
+
+                    # Recreate matrix for additional dimentions
+                    if len(idx_image) > len(matrix) or len(idx_checksum) > len(matrix[0]):
+                        new_matrix = [
+                            [
+                                []
+                                for x
+                                in range(len(idx_checksum))
+                            ]
+                            for y
+                            in range(len(idx_image))
+                        ]
+                        # copy existing matrix to new matrix
+                        for x in range(len(matrix)):
+                            for y in range(len(matrix[0])):
+                                new_matrix[x][y] = matrix[x][y]
+
+                        matrix = new_matrix
+
+                    matrix[i][c].append(file)
+
+                countof['images'] += len(idx_image)
+
+                for checksum in idx_checksum:
+                    c = idx_checksum.index(checksum)
+                    # Remove files already have. Check if there are any left overs
+                    for f in self.CATALOGUE.checksum_files(camera, checksum):
+                        if moment != f['date_time_original']:
+                            self.LOGGER.warn("[UNEXPECTED]", "Checksums with different creation date")
+
+                        image = f['file_name']
+                        if image not in idx_image:
+                            self.LOGGER.warn("[UNEXPECTED]", "Image not seen before")
+                            break
+
+                        i = idx_image.index(image)
+                        found = False
+                        for matrix_file in matrix[i][c]:
+                            if f['file_path'] == matrix_file['file_path']:
+                                found = True
+
+                        if not found:
+                            self.LOGGER.warn("[INTERESTING]", "File not seen before")
+                            exit()
+
+                for image in idx_image:
+                    i = idx_image.index(image)
+                    # Remove files already have. Check if there are any left overs
+                    for f in self.CATALOGUE.name_files(camera, image):
+                        if moment != f['date_time_original']:
+                            # self.LOGGER.warn("[UNEXPECTED]", "Image with different creation date")
+                            continue
+
+                        checksum = f['checksum']
+                        if checksum not in idx_checksum:
+                            self.LOGGER.warn("[UNEXPECTED]", "Checksum not seen before")
+                            break
+
+                        c = idx_checksum.index(checksum)
+                        found = False
+                        for matrix_file in matrix[i][c]:
+                            if f['file_path'] == matrix_file['file_path']:
+                                found = True
+
+                        if not found:
+                            self.LOGGER.warn("[INTERESTING]", "File not seen before")
+                            exit()
 
             summary.append({
                 'camera': camera,
@@ -246,7 +330,7 @@ class Images:
             totals['opps'] += oops
 
             self.LOGGER.info(" | ".join([
-                f"{s['camera']:<28}",
+                f"{s['camera']:<36}",
                 f"Images {s['countof']['images']:>6,}",
                 f"Momments {s['countof']['momments']:>6,}",
                 f"Files {s['countof']['files']:>7,}",
@@ -259,7 +343,7 @@ class Images:
             ]))
 
         self.LOGGER.info(" | ".join([
-            f"TOTALS{totals['cameras']:>22}",
+            f"TOTALS{totals['cameras']:>30}",
             f"TOTAL  {totals['images']:>6,}",
             f"TOTAL    {totals['momments']:>6,}",
             f"TOTAL {totals['files']:>7,}",

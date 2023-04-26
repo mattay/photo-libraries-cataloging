@@ -485,3 +485,39 @@ class Catalogue:
             ORDER BY f.checksum, f.file_name
         ;"""
         return self.__request_results(query)
+
+    def checksum_files(self, camera: str, checksum: str = None) -> list[dict]:
+        query = """--sql
+            SELECT
+                f.file_path,
+                f.file_name,
+                f.checksum,
+                e.camera_make,
+                e.camera_model,
+                e.date_time_original
+            FROM
+                "file" f
+                JOIN exif e ON e.file_path = f.file_path
+            WHERE
+                e.camera_model = ?
+                and f.checksum = ?
+        ;"""
+        return self.__request_results(query, (camera, checksum))
+    
+    def name_files(self, camera: str, name: str) -> list[dict]:
+        query = """--sql
+            SELECT
+                f.file_path,
+                f.file_name,
+                f.checksum,
+                e.camera_make,
+                e.camera_model,
+                e.date_time_original
+            FROM
+                "file" f
+                JOIN exif e ON e.file_path = f.file_path
+            WHERE
+                f.file_name = ?
+                and e.camera_model = ?
+        ;"""
+        return self.__request_results(query, (name, camera,))
