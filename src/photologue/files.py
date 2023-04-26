@@ -98,10 +98,10 @@ def clean_exif(file) -> dict:
 
 def extract_library(path: FilePath) -> dict:
     library = {
-        'library_type': '',
-        'library_name': '',
-        'library_path': '',
-        'is': '',
+        'library_type': None,
+        'library_name': None,
+        'library_path': None,
+        'is': None,
         'is_master': False,
         'is_preview': False,
         'is_thumbnail': False,
