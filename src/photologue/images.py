@@ -143,7 +143,7 @@ class Images:
     def process_images(self) -> None:
         summary = []
         self.CATALOGUE.clear_relationship()
-
+        
         for camera in self.CATALOGUE.cameras():
             self.LOGGER.info(f'Proccesing moments for {camera}')
 
@@ -174,7 +174,7 @@ class Images:
 
                 idx_image = []
                 idx_checksum = []
-                # image name x checksums
+                # Create a marrix with dimentions: image name, checksums
                 matrix = []
                 for file in files:
                     image = file['file_name']
@@ -208,57 +208,74 @@ class Images:
                     matrix[i][c].append(file)
 
                 countof['images'] += len(idx_image)
-
-                for checksum in idx_checksum:
-                    c = idx_checksum.index(checksum)
-                    # Remove files already have. Check if there are any left overs
-                    for f in self.CATALOGUE.checksum_files(camera, checksum):
-                        if moment != f['date_time_original']:
-                            self.LOGGER.warn("[UNEXPECTED]", "Checksums with different creation date")
-
-                        image = f['file_name']
-                        if image not in idx_image:
-                            self.LOGGER.warn("[UNEXPECTED]", "Image not seen before")
-                            break
-
-                        i = idx_image.index(image)
-                        found = False
-                        for matrix_file in matrix[i][c]:
-                            if f['file_path'] == matrix_file['file_path']:
-                                found = True
-
-                        if not found:
-                            self.LOGGER.warn("[INTERESTING]", "File not seen before")
-                            exit()
-
-                for image in idx_image:
-                    i = idx_image.index(image)
-                    # Remove files already have. Check if there are any left overs
-                    for f in self.CATALOGUE.name_files(camera, image):
-                        if moment != f['date_time_original']:
-                            # self.LOGGER.warn("[UNEXPECTED]", "Image with different creation date")
-                            continue
-
-                        checksum = f['checksum']
-                        if checksum not in idx_checksum:
-                            self.LOGGER.warn("[UNEXPECTED]", "Checksum not seen before")
-                            break
-
-                        c = idx_checksum.index(checksum)
-                        found = False
-                        for matrix_file in matrix[i][c]:
-                            if f['file_path'] == matrix_file['file_path']:
-                                found = True
-
-                        if not found:
-                            self.LOGGER.warn("[INTERESTING]", "File not seen before")
-                            exit()
+                self.check_dup_checksums(camera, moment, idx_image, idx_checksum, matrix)
+                self.check_dup_image_names(camera, moment, idx_image, idx_checksum, matrix)
+                # process matrix
+                processed = self.CLEAN.proccess_camera_moment_files(camera, moment, matrix)
 
             summary.append({
                 'camera': camera,
                 'countof': countof
             })
+
         self.log_process_summary(summary)
+
+    def check_dup_checksums(self, camera: str, moment: str, idx_image: list, idx_checksum: list, matrix: list) -> None:
+        for checksum in idx_checksum:
+            c = idx_checksum.index(checksum)
+
+            # Remove files already have. Check if there are any left overs
+            for f in self.CATALOGUE.checksum_files(camera, checksum):
+                if moment != f['date_time_original']:
+                    self.LOGGER.warn("[UNEXPECTED] Checksums with different creation date")
+
+                image = f['file_name']
+                if image not in idx_image:
+                    self.LOGGER.warn("[UNEXPECTED] Image not seen before")
+                    break
+
+                i = idx_image.index(image)
+                found = False
+                for matrix_file in matrix[i][c]:
+                    if f['file_path'] == matrix_file['file_path']:
+                        found = True
+
+                if not found:
+                    self.LOGGER.warn("[INTERESTING] File not seen before")
+                    exit()
+        # return matrix
+
+    def check_dup_image_names(self, camera: str, moment: str, idx_image: list, idx_checksum: list, matrix: list) -> None:
+        for image in idx_image:
+            i = idx_image.index(image)
+
+            # Remove files already have. Check if there are any left overs
+            for f in self.CATALOGUE.name_files(camera, image):
+                if moment != f['date_time_original']:
+                    # TODO comparison for images with no creation date!
+                    # We know that some cameras have overlaping image names due to rolling over or firmware updates.
+
+                    # self.LOGGER.warn(f"[UNEXPECTED] Image {camera}, {image}, {moment} with different creation date {f['date_time_original']}")
+                    continue
+
+                checksum = f['checksum']
+                if checksum not in idx_checksum:
+                    self.LOGGER.warn("[UNEXPECTED] Checksum not seen before")
+                    break
+
+                c = idx_checksum.index(checksum)
+                found = False
+                for matrix_file in matrix[i][c]:
+                    if f['file_path'] == matrix_file['file_path']:
+                        found = True
+
+                if not found:
+                    self.LOGGER.warn("[INTERESTING] File not seen before")
+                    exit()
+        # return matrix
+
+    def process_camera_moment(self, camera: str, moment: str, files: list) -> None:
+        pass
 
     def process_camera_image(self, camera: str, image: str, files: list[dict]) -> dict:
         processed = self.CLEAN.process_camera_image_files(camera, image, files)
