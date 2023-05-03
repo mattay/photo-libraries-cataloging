@@ -4,7 +4,10 @@ from photologue.clean_utils import (
     group_by_checksum,
     group_by_paths,
     list_files,
+    matrix_count,
+    list_matrix_files,
     group_by_raw_plus_checksums,
+    matrix_files,
 )
 
 
@@ -49,6 +52,114 @@ class Clean:
             else:
                 pprint(files, width=256)
                 pass
+
+    def cleanup_matrix(self, matrix: list) -> list:
+        cleaned = []
+        empty_columns = [True for c in range(len(matrix[0]))]
+
+        for row in range(len(matrix)):
+            row_empty = True
+            for column in range(len(matrix[row])):
+                if len(matrix[row][column]) > 0:
+                    # There are files at this vertice
+                    row_empty = False
+                    empty_columns[column] = False
+            if not row_empty:
+                cleaned.append(matrix[row])
+            # Discard if row is empty
+
+        # Check for empty columns
+        for row in cleaned:
+            cleaned_columns = []
+            for c in range(len(row)):
+                column = row.pop(0)
+                if empty_columns[c]:
+                    # Column needs to be removed
+                    break
+                cleaned_columns.append(column)
+            row = cleaned_columns
+
+        return cleaned
+
+    def proccess_camera_moment_files(self, camera: str, moment: str, matrix: list) -> None:
+        results = []
+        ignored_files = []
+        filtered_matrix = [
+            [
+                [] for c in range(len(matrix[0]))
+            ] for r in range(len(matrix))
+        ]
+        extentions = set()
+        
+        # Filter out ignored images
+        for row in range(len(matrix)):
+            for column in range(len(matrix[row])):
+                filtered = []
+                for file in matrix[row][column]:
+                    if self.__ignore_file(file['file_path']):
+                        ignored_files.append(file)
+                        continue
+                    extentions.add(file['file_extention'])
+                    filtered.append(file)
+                filtered_matrix[row][column] = filtered
+
+        # Clean up matrix where ignored files leave empty rows or columns
+        cleaned_matrix = self.cleanup_matrix(filtered_matrix)        
+    
+        if not cleaned_matrix:
+            self.LOGGER.warn(f'[proccess_camera_moment_files] - Only Ignored Files For -> {camera} -> {moment}')
+
+        elif len(cleaned_matrix) == 1 and len(cleaned_matrix[0]) == 1:
+            # Happy Pathcleaned_matrix
+            # Nothing tricky to compare yet
+            print(f"Moment: {moment}\t Happy Path")
+            matrix_count(matrix)
+            self.__happy_matrix(moment, cleaned_matrix)
+            self.__master_and_copies(
+                matrix_files(matrix),
+                ignored=ignored_files,
+            )
+            pass
+
+        elif len(cleaned_matrix) > 1 and len(cleaned_matrix[0]) == 1:
+            # single checksum, multiple names, easy
+            # - Canon DIGITAL IXUS 500 => 
+            # - DMC-LX3 => UID created for photoslibrary files.
+            # print(f"Moment: {moment}\tmatrix_size: {matrix_size}")
+            print(f"Moment: {moment}\t Multiple Names")
+            matrix_count(matrix)
+            pass
+
+        elif len(cleaned_matrix) == 1 and len(cleaned_matrix[0]) > 1:
+            # One name, Multiple checksums
+            # - exports?
+            # - Dual Format?
+            print(f"Moment: {moment}\t Multiple Checksums")
+            print(extentions)
+            matrix_count(matrix)
+            pass
+
+        else:
+            # multiple image names and # One name, Multiple checksums
+            # Are they exclusive?
+            # print(f"Moment: {moment}")
+            print(f"Moment: {moment}\t Multiple Names and Multiple Checksums")
+            # matrix_count(matrix)
+            pass
+
+        if ignored_files:
+            # print(f"Moment: {moment}\t ignored: {len(ignored_files)}")
+            list_files(moment, ignored_files)
+        #     for f in ignored_files:
+        #         print("\t", f['file_name'], f['checksum'], f['file_path'])
+        
+        return results
+
+    def __happy_matrix(self, moment: str, matrix: list) -> None:
+        image_master_file = self.__prefered_master(matrix_files(matrix))
+        print(image_master_file)            
+        # list_files()
+        pass
 
     def process_camera_image_files(self, camera: str, image: str, files: list[dict]) -> list:
         results = []
