@@ -63,7 +63,35 @@ def group_by_raw_plus_checksums(paired: dict) -> dict[str, dict]:
     }
 
 
-def list_files(group: str, files: list):
+def matrix_count(matrix: list) -> None:
+    for row in matrix:
+        name = ''
+        counts = []
+        for checksum in row:
+            counts.append(len(checksum))
+            if len(checksum) > 0 and not name:
+                file = checksum[0]
+                name = file['file_name']
+
+        if not name:
+            name = 'REMOVED ->'
+
+        print(f"\t{name}\t", counts)
+
+
+def matrix_files(matrix: list) -> list:
+    files = []
+    for row in matrix:
+        for column in row:
+            files = [*files, *column]
+    return files
+
+
+def list_matrix_files(group: str, matrix: list) -> None:
+    list_files(group, matrix_files(matrix))
+
+
+def list_files(group: str, files: list) -> None:
     print(group)
     print("  DATE       MOD DATE   M CHECKSUM     C SOFTWARE         QUALITY  LIB TYPE  FILE PATH")
     print("  ---------- ---------- - ------------ - ---------------- -------- -------- ------------------------------------------------")
