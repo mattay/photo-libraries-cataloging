@@ -165,19 +165,19 @@ command_collect() {
 }
 
 
-command_rules(){
-  echo "Processing Rules..."
+command_process(){
+  echo "Processing Camera Images..."
   START=$(date +%s)
 
-  pipenv run python ./src/photologue/main.py rules
+  pipenv run python ./src/photologue/main.py process
 
   END=$(date +%s)
   elapsed $START $END
 }
 
-profile_rules(){
+profile_process(){
   file_profiled=profiling/profile.dat
-  pipenv run python -m cProfile -o ${file_profiled} ./main.py rules
+  pipenv run python -m cProfile -o ${file_profiled} ./main.py process
   snakeviz ${file_profiled}
 }
 
@@ -247,7 +247,7 @@ main() {
   
   elif [[ $COMMAND == "process" ]]
   then
-    command_rules
+    command_process
 
   elif [[ $COMMAND == "lint" ]]
   then

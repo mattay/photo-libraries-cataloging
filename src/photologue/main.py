@@ -4,8 +4,7 @@
 Usage:
     main.py collect (checksums|exifs|files|stats)
     main.py missing (checksums|exifs|stats) [--print0]
-    main.py mappings [--verbose]
-    main.py rules
+    main.py process
     main.py summary
     main.py cleanup
     main.py (-h | --help)
@@ -19,7 +18,7 @@ Options:
     --sample
 """
 from docopt import docopt
-from typing import Any, Pattern
+from typing import Pattern
 
 import os
 import sys
@@ -217,11 +216,9 @@ def missing(mode: str | None, line_ending: str = "\n") -> None:
             sys.stdout.write(f"{file}{line_ending}")
 
 
-def rules() -> None:
-    global LOGGER, IMAGES
-    LOGGER.info('Processing Rules')
-    IMAGES.process_images()
 
+def process() -> None:
+    pass
 
 def checksum_duplicate_image_names() -> None:
     global LOGGER, IMAGES
@@ -229,20 +226,8 @@ def checksum_duplicate_image_names() -> None:
     IMAGES.cleanup_images()
 
 
-def mapping() -> None:
-    # 	pprint('Mappings')
-    # mappings = Mappings()
-    # mappings.add_images(IMAGES.list_files())
 
-    # mappings.report(PATHS['mapping'])
 
-    #  TODO: list of images
-    #  each file ->
-    #  -- library or path
-    #  -- camera model
-    #  -- file format
-    #  -- original date
-    pass
 
 
 def summary():
@@ -276,7 +261,7 @@ def main():
     arguments = docopt(__doc__, version=ABOUT['__version__'])  # type: ignore
 
     ABOUT['verbose'] = arguments['--verbose']
-    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'rules', 'summary', 'cleanup'])
+    ABOUT['command'] = pick_args(arguments, ['collect', 'missing', 'process', 'summary', 'cleanup'])
     ABOUT['mode'] = pick_args(arguments, ['files', 'exifs', 'stats', 'checksums'])
 
     setup()
@@ -284,24 +269,21 @@ def main():
     mode = ABOUT['mode']
     command = ABOUT['command']
 
-    if command == 'collect':
-        collect(mode)
+    match command:
+        case 'collect':
+            collect(mode)
+        case 'missing':
+            line_ending = "\x00" if arguments['--print0'] else "\n"
+            missing(mode, line_ending)
+        case 'process':
+            process()
+        case 'summary':
+            summary()
+        # case 'cleanup':
+        #     checksum_duplicate_image_names()
 
-    if command == 'missing':
-        line_ending = "\x00" if arguments['--print0'] else "\n"
-        missing(mode, line_ending)
-
-    if command == 'rules':
-        rules()
-
-    if command == 'mappings':
-        mapping()
-
-    if command == 'summary':
-        summary()
-
-    if command == 'cleanup':
-        checksum_duplicate_image_names()
+        case _:
+            print(f'Unknown command {command}')
 
 
 if __name__ == '__main__':
