@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Globals
 APP_MAIN=./src/photologue/main.py
 APP_CONFIG=./src/photologue/config.py
 
@@ -107,7 +108,7 @@ profile_find_in_paths(){
 collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
-  
+
   pipenv run python ${APP_MAIN} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
   | pipenv run python ${APP_MAIN} collect stats
@@ -206,12 +207,12 @@ command_lint() {
 
 command_test() {
   echo "pytest"
-  pipenv run pytest  
+  pipenv run pytest
 }
 
 command_profile() {
   echo "Profiling"
-  profile_find_in_paths  
+  profile_find_in_paths
 }
 
 command_cleanup() {
@@ -247,12 +248,12 @@ main() {
     echo "YAML file not found: $APP_CONFIG"
     return 1
   fi
-  
+
 
   if [[ $COMMAND == "collect" ]]
   then
     command_collect
-  
+
   elif [[ $COMMAND == "process" ]]
   then
     command_process
@@ -260,7 +261,7 @@ main() {
   elif [[ $COMMAND == "lint" ]]
   then
     command_lint
-  
+
   elif [[ $COMMAND == "test" ]]
   then
     command_test
@@ -295,4 +296,3 @@ then
 else
   main_help
 fi
-
