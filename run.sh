@@ -249,7 +249,6 @@ main() {
     return 1
   fi
 
-
   if [[ $COMMAND == "collect" ]]
   then
     command_collect
