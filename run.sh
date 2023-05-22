@@ -3,8 +3,7 @@
 APP_MAIN=./src/photologue/main.py
 APP_CONFIG=./src/photologue/config.py
 
-mkdir -p logs
-
+# Monitor the time it takes for a command to run.
 elapsed () {
   start=$1
   end=$2
@@ -58,21 +57,21 @@ find_extentions () {
 find_in_paths() {
   local IFS=$'\n'
 
-  echo 'Fetching Paths'
-  PATHS=$(pipenv run python ${APP_CONFIG} paths)
+  # Fetching Paths
+  PATHS=$(yq eval '.import.volumes.[].[]' "$APP_CONFIG")
 
-  # echo 'Fetching extentions'
-  # EXTENTIONS=$(pipenv run python ./config.py extentions)
+  # Fetching extentions
+  EXTENTIONS=$(yq eval '.import.extentions[]' "$APP_CONFIG")
 
   # check we have the values we need
   if [[ -z "$PATHS" ]]
   then
-    echo "No PATHS"
+    echo "No paths have been definded under import > volumes in $APP_CONFIG"
     exit 1
-  # elif [[ -z "$EXTENTIONS" ]]
-  # then
-  #   echo "No EXTENTIONS"
-  #   exit 1
+  elif [[ -z "$EXTENTIONS" ]]
+  then
+    echo "No file extentions have been defined under import > extentions $APP_CONFIG"
+    exit 1
   fi
 
   for p in $PATHS
@@ -80,7 +79,9 @@ find_in_paths() {
     START=$(date +%s)
     echo "Finding images in ${p}"
 
-    find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
+    expression=$(printf " -name '*%s' -o" $EXTENTIONS | sed 's/-o$//')
+
+    find "${p}" -type f "${expression}" \
     | pipenv run python ${APP_MAIN} collect files
 
     END=$(date +%s)
@@ -240,6 +241,13 @@ main_help() {
 
 main() {
   COMMAND=$1
+
+  # Check config file is avaliable
+  if [[ ! -f "$APP_CONFIG" ]]; then
+    echo "YAML file not found: $APP_CONFIG"
+    return 1
+  fi
+  
 
   if [[ $COMMAND == "collect" ]]
   then
