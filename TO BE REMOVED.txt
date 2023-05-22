@@ -1,0 +1,106 @@
+=================================
+    TO BE REMOVED
+=================================
+
+/Volumes/LaCie/_MASTER_Aperture_20190520/Travels.aplibrary/Masters/2014/01/19/20140119-184651/6859534359_9c954f7cf4_o.jpg
+
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Kakadu/2007-10-01 12.13.27.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Kakadu/2007-10-01 09.59.56.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Kakadu/2007-10-01 10.09.56.jpg'
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/front2 copy.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/front3 copy.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/front-sway copy.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/front1 copy.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Panoramas/SouthKorean_FortressWalk_Panorama.JPG',
+'/Volumes/Padawan/_Pictures/_Exports/Panoramas/SouthKorea_WarMemorial_panorama.JPG',
+'/Volumes/Padawan/_Pictures/_Exports/Panoramas/Maine_backdeck.JPG',
+
+
+/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/29/20160229-093651/IMG_0566.JPG
+
+/Volumes/Jedi/Photos/iCloud/IMG_0428.jpeg
+/Volumes/Jedi/Photos/iCloud/IMG_0428.jpeg
+
+=================================
+   REMOVED
+=================================
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/America 2010/2010-08-12 09.16.59.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/America 2010/2010-08-13 07.57.24.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Hobart/2010-09-14 14.32.57.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.32.25.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.32.57.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.50.59.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.51.16-1.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.51.16-2.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.52.29.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.52.49.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 12.52.55.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 13.16.57.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 13.39.33.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 13.43.55.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 13.44.08-1.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 13.44.08-2.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 15.51.46.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 15.51.56.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto (Old)/Trackday/2011-04-11 15.52.00.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto/Hobart/2010-09-17 16.33.54.jpg',
+'/Users/matthew/Dropbox/Photos/Photos from iPhoto/Hobart/2010-09-18 12.18.19.jpg',
+'/Volumes/Jedi/Photos/iCloud/GPTempDownload (39).jpeg'
+'/Volumes/Jedi/Photos/iCloud/IMG_0225.jpeg',
+'/Volumes/Jedi/Photos/iCloud/IMG_0515.jpeg',
+'/Volumes/Jedi/Photos/iCloud/IMG_0573.jpeg',
+'/Volumes/Jedi/Photos/iCloud/IMG_0589.jpeg',
+'/Volumes/Jedi/Photos/iCloud/IMG_1982.jpeg',
+'/Volumes/Jedi/Photos/iCloud/IMG_2132.jpeg',
+'/Volumes/Padawan/_Pictures/_Exports/Eskitis/_IGP1903.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Eskitis/_IGP1904.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Eskitis/_IGP1905.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Eskitis/_IGP1906.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Eskitis/_IGP1907.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/brace.JPG'
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/flatshelf.JPG'
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/openshelf.JPG'
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/shelf.JPG'
+'/Volumes/Padawan/_Pictures/_Exports/KA Laser/shelfbrace.JPG'
+'/Volumes/Padawan/_Pictures/_Exports/Panoramas/Sunset_Panorama_Grampians.jpg'
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1287.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1291.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1344.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1348.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1349.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1360.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1365.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1372.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1394.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1420.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1433.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1435.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1436.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1447.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1449.jpg',
+'/Volumes/Padawan/_Pictures/_Exports/Trackday/_IGP1451.jpg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/1/14C9BA6D-3A4B-4FC0-BEF4-7B7ABE106206.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/2/2941AED6-A9BA-4BDB-946B-C0C753455868.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/4/4CBC5A54-2F5C-47BB-B6C0-010F6F99B38C.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/9/9C62DE87-278B-4082-8BB0-898E90BD992D.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/C/CF5C6C19-4BA3-4CAE-A99B-EBDE6C26EB4D.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iCloud.photoslibrary/originals/F/FA5122F0-36E4-4A93-B630-4C21557C4242.jpeg',
+'/Volumes/Padawan/_Pictures/_Libaries/iPhoto Library #2/Masters/2009/Egypt/_IGP3268.PEF.jpg',
+'/Volumes/Padawan/_Pictures/_Libaries/Lightroom/Lightroom CC/8c5bbdf7cd854e48a842a773b59c6d51/originals/2019/2019-08-12/IMG_E4724.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/iPhoto Library copy/Masters/2009/Egypt/_IGP3268.PEF.jpg',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/01/30/20160130-042459/IMG_0225.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/15/20160215-072309/IMG_0410.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/02/26/20160226-101315/IMG_0515.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/03/01/20160301-085818/IMG_0573.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2016/03/03/20160303-130117/IMG_0589.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2017/01/12/20170112-005944/IMG_1984.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/_Libraries/South America 2014.photoslibrary/Masters/2017/03/13/20170313-084455/IMG_2132.JPG',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/Travels/2013 Europe__2.aplibrary/Masters/2014/01/19/20140119-184651/6859534359_9c954f7cf4_o.jpg',
+'/Volumes/Padawan/_Pictures/Aperture Library Collections/Travels/2013 Europe__5.aplibrary/Masters/2014/01/19/20140119-184651/6859534359_9c954f7cf4_o.jpg',
+'/Volumes/Padawan/_Pictures/Collections/cars/KA laser/IMG_0409.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3628.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3629.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3630.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3631.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3632.JPG'
+'/Volumes/Padawan/_Pictures/Collections/playing around/125_2503/_IGP3638.JPG'
