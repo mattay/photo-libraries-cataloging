@@ -18,7 +18,7 @@ Options:
     --sample
 """
 from docopt import docopt
-from typing import Pattern
+from typing import Any, Pattern
 
 import os
 import sys
