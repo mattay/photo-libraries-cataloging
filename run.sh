@@ -158,6 +158,15 @@ collect_checksums() {
   elapsed $START $END
 }
 
+#  Delete log files
+clear_logs() {
+  find ./logs -name "*.log" -delete
+}
+
+# # #
+# #     Commands
+#
+
 
 command_collect() {
   find_in_paths
