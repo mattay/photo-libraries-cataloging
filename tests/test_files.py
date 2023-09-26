@@ -1,5 +1,5 @@
 import pytest
-from photologue.files import clean_name, extract_library, is_desired
+from photologue.files.files import clean_name, extract_library, is_desired
 
 
 files = {

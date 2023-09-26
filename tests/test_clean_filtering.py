@@ -1,6 +1,5 @@
 import pytest
 from photologue.clean.clean_filtering import (
-    # filter_camera_files,
     filter_out,
     ignore_file
 )
