@@ -108,7 +108,7 @@ profile_find_in_paths(){
 collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
-  
+
   pipenv run python ${APP_MAIN} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
   | pipenv run python ${APP_MAIN} collect stats
@@ -171,23 +171,11 @@ command_process(){
   echo "Processing Camera Images..."
   START=$(date +%s)
 
-  pipenv run python ./src/photologue/main.py process
+  pipenv run python ${APP_MAIN} process
 
   END=$(date +%s)
   elapsed $START $END
 }
-
-profile_process(){
-  file_profiled=profiling/profile.dat
-  pipenv run python -m cProfile -o ${file_profiled} ./main.py process
-  snakeviz ${file_profiled}
-}
-
-
-clear_logs() {
-  find ./logs -name "*.log" -delete
-}
-
 
 command_clear_logs  () {
   clear_logs
@@ -207,12 +195,13 @@ command_lint() {
 
 command_test() {
   echo "pytest"
-  pipenv run pytest  
+  pipenv run pytest
 }
 
 command_profile() {
   echo "Profiling"
-  profile_find_in_paths  
+  # profile_find_in_paths
+  profile_process
 }
 
 command_cleanup() {
@@ -239,7 +228,6 @@ main_help() {
   echo $'\ttest'
 }
 
-
 main() {
   COMMAND=$1
 
@@ -248,12 +236,12 @@ main() {
     echo "YAML file not found: $APP_CONFIG"
     return 1
   fi
-  
+
 
   if [[ $COMMAND == "collect" ]]
   then
     command_collect
-  
+
   elif [[ $COMMAND == "process" ]]
   then
     command_process
@@ -261,7 +249,7 @@ main() {
   elif [[ $COMMAND == "lint" ]]
   then
     command_lint
-  
+
   elif [[ $COMMAND == "test" ]]
   then
     command_test
@@ -288,12 +276,12 @@ main() {
 
 }
 
-
+# Starts here
 COMMAND=$1
+
 if [[ ! -z "$COMMAND" ]]
 then
   main $COMMAND
 else
   main_help
 fi
-
