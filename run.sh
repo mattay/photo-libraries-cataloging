@@ -209,8 +209,7 @@ command_test() {
 
 command_profile() {
   echo "Profiling"
-  # profile_find_in_paths
-  profile_process
+  profile_find_in_paths
 }
 
 command_cleanup() {
