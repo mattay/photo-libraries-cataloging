@@ -171,23 +171,11 @@ command_process(){
   echo "Processing Camera Images..."
   START=$(date +%s)
 
-  pipenv run python ./src/photologue/main.py process
+  pipenv run python ${APP_MAIN} process
 
   END=$(date +%s)
   elapsed $START $END
 }
-
-profile_process(){
-  file_profiled=profiling/profile.dat
-  pipenv run python -m cProfile -o ${file_profiled} ./main.py process
-  snakeviz ${file_profiled}
-}
-
-
-clear_logs() {
-  find ./logs -name "*.log" -delete
-}
-
 
 command_clear_logs  () {
   clear_logs
@@ -239,7 +227,6 @@ main_help() {
   echo $'\ttest'
 }
 
-
 main() {
   COMMAND=$1
 
@@ -287,8 +274,9 @@ main() {
 
 }
 
-
+# Starts here
 COMMAND=$1
+
 if [[ ! -z "$COMMAND" ]]
 then
   main $COMMAND
