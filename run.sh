@@ -90,6 +90,9 @@ find_in_paths() {
   done
 }
 
+# # #
+# #     Profiling
+#
 profile_find_in_paths(){
   local IFS=$'\n'
 
@@ -103,6 +106,9 @@ profile_find_in_paths(){
   snakeviz ${file_profiled}
 }
 
+# # #
+# #     Collecting
+#
 
 # Grab file stat
 collect_stats() {
@@ -116,7 +122,6 @@ collect_stats() {
   END=$(date +%s)
   elapsed $START $END
 }
-
 
 # Grab exif info
 collect_exif() {
@@ -144,7 +149,6 @@ collect_exif() {
   elapsed $START $END
 }
 
-
 # Grab Checksums
 collect_checksums() {
   echo "Collecting checksums..."
@@ -167,14 +171,12 @@ clear_logs() {
 # #     Commands
 #
 
-
 command_collect() {
   find_in_paths
   collect_stats
   collect_exif
   collect_checksums
 }
-
 
 command_process(){
   echo "Processing Camera Images..."
@@ -190,7 +192,6 @@ command_clear_logs  () {
   clear_logs
 }
 
-
 command_lint() {
   SRC=src
 
@@ -200,7 +201,6 @@ command_lint() {
   echo "flake8"
   pipenv run flake8 ${SRC}
 }
-
 
 command_test() {
   echo "pytest"
@@ -222,6 +222,10 @@ command_summary() {
   pipenv run python ${APP_MAIN} summary
 }
 
+
+# # #
+# #     Main
+#
 
 main_help() {
   echo "run.sh <COMMAND>"
@@ -284,7 +288,9 @@ main() {
 
 }
 
-# Starts here
+# # #
+# #     => Starts here <=
+#
 COMMAND=$1
 
 if [[ ! -z "$COMMAND" ]]
