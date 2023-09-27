@@ -90,6 +90,7 @@ find_in_paths() {
   done
 }
 
+
 # # #
 # #     Profiling
 #
@@ -105,6 +106,7 @@ profile_find_in_paths(){
 
   snakeviz ${file_profiled}
 }
+
 
 # # #
 # #     Collecting
@@ -166,6 +168,7 @@ collect_checksums() {
 clear_logs() {
   find ./logs -name "*.log" -delete
 }
+
 
 # # #
 # #     Commands
@@ -286,6 +289,7 @@ main() {
   fi
 
 }
+
 
 # # #
 # #     => Starts here <=
