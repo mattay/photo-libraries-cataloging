@@ -293,6 +293,8 @@ main() {
 #
 COMMAND=$1
 
+mkdir -p log
+
 if [[ ! -z "$COMMAND" ]]
 then
   main $COMMAND
