@@ -1,10 +1,10 @@
 #!/bin/bash
 
+# Globals
 APP_MAIN=./src/photologue/main.py
-APP_CONFIG=./src/photologue/config.py
+APP_CONFIG=./config.yml
 
-mkdir -p logs
-
+# Monitor the time it takes for a command to run.
 elapsed () {
   start=$1
   end=$2
@@ -58,21 +58,21 @@ find_extentions () {
 find_in_paths() {
   local IFS=$'\n'
 
-  echo 'Fetching Paths'
-  PATHS=$(pipenv run python ${APP_CONFIG} paths)
+  # Fetching Paths
+  PATHS=$(yq eval '.import.volumes.[].[]' "$APP_CONFIG")
 
-  # echo 'Fetching extentions'
-  # EXTENTIONS=$(pipenv run python ./config.py extentions)
+  # Fetching extentions
+  EXTENTIONS=$(yq eval '.import.extentions[]' "$APP_CONFIG")
 
   # check we have the values we need
   if [[ -z "$PATHS" ]]
   then
-    echo "No PATHS"
+    echo "No paths have been definded under import > volumes in $APP_CONFIG"
     exit 1
-  # elif [[ -z "$EXTENTIONS" ]]
-  # then
-  #   echo "No EXTENTIONS"
-  #   exit 1
+  elif [[ -z "$EXTENTIONS" ]]
+  then
+    echo "No file extentions have been defined under import > extentions $APP_CONFIG"
+    exit 1
   fi
 
   for p in $PATHS
@@ -80,7 +80,9 @@ find_in_paths() {
     START=$(date +%s)
     echo "Finding images in ${p}"
 
-    find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
+    expression=$(printf " -name '*%s' -o" $EXTENTIONS | sed 's/-o$//')
+
+    find "${p}" -type f "${expression}" \
     | pipenv run python ${APP_MAIN} collect files
 
     END=$(date +%s)
@@ -88,6 +90,10 @@ find_in_paths() {
   done
 }
 
+
+# # #
+# #     Profiling
+#
 profile_find_in_paths(){
   local IFS=$'\n'
 
@@ -102,11 +108,15 @@ profile_find_in_paths(){
 }
 
 
+# # #
+# #     Collecting
+#
+
 # Grab file stat
 collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
-  
+
   pipenv run python ${APP_MAIN} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
   | pipenv run python ${APP_MAIN} collect stats
@@ -114,7 +124,6 @@ collect_stats() {
   END=$(date +%s)
   elapsed $START $END
 }
-
 
 # Grab exif info
 collect_exif() {
@@ -142,7 +151,6 @@ collect_exif() {
   elapsed $START $END
 }
 
-
 # Grab Checksums
 collect_checksums() {
   echo "Collecting checksums..."
@@ -156,6 +164,15 @@ collect_checksums() {
   elapsed $START $END
 }
 
+#  Delete log files
+clear_logs() {
+  find ./logs -name "*.log" -delete
+}
+
+
+# # #
+# #     Commands
+#
 
 command_collect() {
   find_in_paths
@@ -164,33 +181,19 @@ command_collect() {
   collect_checksums
 }
 
-
 command_process(){
   echo "Processing Camera Images..."
   START=$(date +%s)
 
-  pipenv run python ./src/photologue/main.py process
+  pipenv run python ${APP_MAIN} process
 
   END=$(date +%s)
   elapsed $START $END
 }
 
-profile_process(){
-  file_profiled=profiling/profile.dat
-  pipenv run python -m cProfile -o ${file_profiled} ./main.py process
-  snakeviz ${file_profiled}
-}
-
-
-clear_logs() {
-  find ./logs -name "*.log" -delete
-}
-
-
 command_clear_logs  () {
   clear_logs
 }
-
 
 command_lint() {
   SRC=src
@@ -202,15 +205,14 @@ command_lint() {
   pipenv run flake8 ${SRC}
 }
 
-
 command_test() {
   echo "pytest"
-  pipenv run pytest  
+  pipenv run pytest
 }
 
 command_profile() {
   echo "Profiling"
-  profile_find_in_paths  
+  profile_find_in_paths
 }
 
 command_cleanup() {
@@ -223,6 +225,10 @@ command_summary() {
   pipenv run python ${APP_MAIN} summary
 }
 
+
+# # #
+# #     Main
+#
 
 main_help() {
   echo "run.sh <COMMAND>"
@@ -237,14 +243,20 @@ main_help() {
   echo $'\ttest'
 }
 
-
 main() {
   COMMAND=$1
+
+  # Check config file is avaliable
+  if [[ ! -f "$APP_CONFIG" ]]; then
+    echo "YAML file not found: $APP_CONFIG"
+    return 1
+  fi
+
 
   if [[ $COMMAND == "collect" ]]
   then
     command_collect
-  
+
   elif [[ $COMMAND == "process" ]]
   then
     command_process
@@ -252,7 +264,7 @@ main() {
   elif [[ $COMMAND == "lint" ]]
   then
     command_lint
-  
+
   elif [[ $COMMAND == "test" ]]
   then
     command_test
@@ -280,11 +292,16 @@ main() {
 }
 
 
+# # #
+# #     => Starts here <=
+#
 COMMAND=$1
+
+mkdir -p log
+
 if [[ ! -z "$COMMAND" ]]
 then
   main $COMMAND
 else
   main_help
 fi
-
