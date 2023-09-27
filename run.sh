@@ -235,7 +235,7 @@ main_help() {
   echo ""
   echo "COMMAND"
   echo $'\tcleanup'
-  echo $'\tclearlogs'
+  # echo $'\tclearlogs'
   echo $'\tcollect'
   echo $'\tlint'
   echo $'\tprocess'
@@ -252,37 +252,39 @@ main() {
     return 1
   fi
 
-  if [[ $COMMAND == "collect" ]]
+  # if [[ $COMMAND == "cleanup" ]]
+  # then
+  #   command_cleanup
+
+  if [[ $COMMAND == "clearlogs" ]]
+  then
+    command_clear_logs
+
+  elif [[ $COMMAND == "collect" ]]
   then
     command_collect
-
-  elif [[ $COMMAND == "process" ]]
-  then
-    command_process
 
   elif [[ $COMMAND == "lint" ]]
   then
     command_lint
 
-  elif [[ $COMMAND == "test" ]]
+  elif [[ $COMMAND == "process" ]]
   then
-    command_test
-
-  elif [[ $COMMAND == "clearlogs" ]]
-  then
-    command_clear_logs
-
-  elif [[ $COMMAND == "profile" ]]
-  then
-    command_profile
+    command_process
 
   elif [[ $COMMAND == "summary" ]]
   then
     command_summary
 
-  elif [[ $COMMAND == "cleanup" ]]
+  elif [[ $COMMAND == "test" ]]
   then
-    command_cleanup
+    command_test
+
+  # Development commands
+
+  elif [[ $COMMAND == "profile" ]]
+  then
+    command_profile
 
   else
     main_help
