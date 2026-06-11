@@ -41,7 +41,7 @@ def filter_camera_files(camera_rules: Camera, condition: str, matches: str | Non
     # collect Rules
     for filter_on in camera_rules.get('filters', []):
         if filter_on['condition'] == condition and filter_on['matches'] == matches:
-            rules.append(filter)
+            rules.append(filter_on)
 
     if not rules:
         results['keep'] = files
