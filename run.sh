@@ -83,7 +83,7 @@ find_in_paths() {
     expression=$(printf " -name '*%s' -o" $EXTENTIONS | sed 's/-o$//')
 
     find "${p}" -type f "${expression}" \
-    | pipenv run python ${APP_MAIN} collect files
+    | poetry run python ${APP_MAIN} collect files
 
     END=$(date +%s)
     elapsed $START $END
@@ -102,7 +102,7 @@ profile_find_in_paths(){
   echo "Finding images in ${p}"
 
   find ${p} -name "*.PEF" -o -name "*.jpg" -o -name "*.JPG" -o -name "*.jpeg" -o -name "*.DNG" -o -name "*.RW2" \
-  | pipenv run python -m cProfile -o ${file_profiled} ${APP_MAIN} collect files
+  | poetry run python -m cProfile -o ${file_profiled} ${APP_MAIN} collect files
 
   snakeviz ${file_profiled}
 }
@@ -117,9 +117,9 @@ collect_stats() {
   echo "Collecting stats..."
   START=$(date +%s)
 
-  pipenv run python ${APP_MAIN} missing stats --print0 \
+  poetry run python ${APP_MAIN} missing stats --print0 \
   | xargs -0 stat -f "%z%t%B%t%c%t%m%t%a%t%N" \
-  | pipenv run python ${APP_MAIN} collect stats
+  | poetry run python ${APP_MAIN} collect stats
 
   END=$(date +%s)
   elapsed $START $END
@@ -130,7 +130,7 @@ collect_exif() {
   echo "Collecting exifs..."
   START=$(date +%s)
 
-  pipenv run python ${APP_MAIN} missing exifs \
+  poetry run python ${APP_MAIN} missing exifs \
   | exiftool -@ - -T \
   -DateTimeOriginal \
   -FileModifyDate \
@@ -145,7 +145,7 @@ collect_exif() {
   -ImageWidth \
   -Software \
   -filepath \
-  | pipenv run python ${APP_MAIN} collect exifs
+  | poetry run python ${APP_MAIN} collect exifs
 
   END=$(date +%s)
   elapsed $START $END
@@ -156,9 +156,9 @@ collect_checksums() {
   echo "Collecting checksums..."
   START=$(date +%s)
 
-  pipenv run python ${APP_MAIN} missing checksums --print0 \
+  poetry run python ${APP_MAIN} missing checksums --print0 \
   | xargs -0 cksum \
-  | pipenv run python ${APP_MAIN} collect checksums
+  | poetry run python ${APP_MAIN} collect checksums
 
   END=$(date +%s)
   elapsed $START $END
@@ -185,7 +185,7 @@ command_process(){
   echo "Processing Camera Images..."
   START=$(date +%s)
 
-  pipenv run python ${APP_MAIN} process
+  poetry run python ${APP_MAIN} process
 
   END=$(date +%s)
   elapsed $START $END
@@ -199,15 +199,15 @@ command_lint() {
   SRC=src
 
   echo "mypy"
-  pipenv run mypy ${SRC}
+  poetry run mypy ${SRC}
 
   echo "flake8"
-  pipenv run flake8 ${SRC}
+  poetry run flake8 ${SRC}
 }
 
 command_test() {
   echo "pytest"
-  pipenv run pytest
+  poetry run pytest
 }
 
 command_profile() {
@@ -217,12 +217,12 @@ command_profile() {
 
 command_cleanup() {
   echo "Cleanup"
-  pipenv run python ${APP_MAIN} cleanup
+  poetry run python ${APP_MAIN} cleanup
 }
 
 command_summary() {
   echo "Sumamry"
-  pipenv run python ${APP_MAIN} summary
+  poetry run python ${APP_MAIN} summary
 }
 
 
