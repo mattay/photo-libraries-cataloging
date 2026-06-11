@@ -1,12 +1,42 @@
-[build-system]
-requires = ["setuptools>=42.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tools.pytest.ini_options]
-addopts = "--cover=photologue"
-testpaths = [
-  "tests",
+[project]
+name = "photologue"
+version = "0.5.0"
+description = "Cleans up duplicates from photo libraries"
+authors = [{name = "Matthew Anderson"}]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "PyYAML>=6.0.3",
+    "configparser==5.3.0",
+    "docopt==0.6.2",
 ]
+
+[tool.poetry]
+packages = [{include = "photologue", from = "src"}]
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0"
+flake8 = "^6.0"
+mypy = "*"
+pytest = "^7.2"
+pytest-cov = "^4.0"
+pytest-watch = "^4.2"
+snakeviz = "*"
+tox = "^3.27"
+wheel = "^0.38.1"
+types-PyYAML = ">=6.0.3"
+types-docopt = "0.6.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--cov=photologue"
+testpaths = ["tests"]
 
 [tool.mypy]
 mypy_path = "src"
+
+[tool.flake8]
+max-line-length = 160

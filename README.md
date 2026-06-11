@@ -9,11 +9,11 @@ Using Homebrew we'll install:
 - [exiftool](https://exiftool.org) - Image metadata extraction (Perl)
 - [sqlite](https://www.sqlite.org) Local file based SQL database
 - [pcre](https://www.pcre.org) regex for sqlite
-- [pipenv](https://pipenv.pypa.io) virtural enviroment (Python)
+- [poetry](https://python-poetry.org) Python packaging and dependency management
 - [yq](https://github.com/mikefarah/yq) Process YAML, JSON, XML, CSV and properties documents from the CLI (Go)
 
 ```bash
-brew install ExifTool sqlite pcre pipenv yq
+brew install ExifTool sqlite pcre poetry yq
 ```
 
 ### SQLite configuration
@@ -49,8 +49,7 @@ PRAGMA foreign_keys = ON;
 ### Python setup
 
 ```bash
-pipenv install -e .
-pipenv install -r requirements_dev.txt
+poetry install
 ```
 
 ## Running
@@ -146,7 +145,7 @@ Commands
 - **summary** Stats on file patterns in collection.
 
 ```bash
-./run <command>
+./run.sh <command>
 ```
 
 ## Developmnet
@@ -160,19 +159,19 @@ Commands
 Lint code
 
 ```bash
-./run lint
+./run.sh lint
 ```
 
 Run unit tests
 
 ```bash
-./run test
+./run.sh test
 ```
 
 Profile code, Check run.sh to see which command is being profiled
 
 ```bash
-./run profile
+./run.sh profile
 ```
 
 ## Notes
