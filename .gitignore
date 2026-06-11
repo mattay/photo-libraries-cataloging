@@ -1,3 +1,6 @@
+# Virtual environment
+venv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -10,6 +13,7 @@ build/
 # Unit test / coverage reports
 .tox/
 .pytest_cache/
+.coverage
 
 # mypy
 .mypy_cache/
