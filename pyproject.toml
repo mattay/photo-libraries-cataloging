@@ -7,7 +7,6 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "PyYAML>=6.0.3",
-    "configparser==5.3.0",
     "docopt==0.6.2",
 ]
 
@@ -15,15 +14,11 @@ dependencies = [
 packages = [{include = "photologue", from = "src"}]
 
 [tool.poetry.group.dev.dependencies]
-autopep8 = "^2.0"
 flake8 = "^6.0"
 mypy = "*"
 pytest = "^7.2"
 pytest-cov = "^4.0"
-pytest-watch = "^4.2"
 snakeviz = "*"
-tox = "^3.27"
-wheel = "^0.38.1"
 types-PyYAML = ">=6.0.3"
 types-docopt = "0.6.11"
 
