@@ -16,7 +16,7 @@ packages = [{include = "photologue", from = "src"}]
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0"
 mypy = "*"
-pytest = "^7.2"
+pytest = "^9.0"
 pytest-cov = "^4.0"
 snakeviz = "*"
 types-PyYAML = ">=6.0.3"
