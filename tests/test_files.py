@@ -1,5 +1,5 @@
 import pytest
-from photologue.files import clean_name, extract_library, is_desired
+from photologue.files.files import clean_name, extract_library, is_desired
 
 
 files = {
@@ -16,10 +16,10 @@ files = {
             'temp': False
         },
         'library': {
-            'library_type': None,
-            'library_name': None,
-            'library_path': None,
-            'is': None,
+            'library_type': '',
+            'library_name': '',
+            'library_path': '',
+            'is': '',
             'is_master': False,
             'is_preview': False,
             'is_thumbnail': False,
@@ -40,10 +40,10 @@ files = {
             'temp': False
         },
         'library': {
-            'library_type': None,
-            'library_name': None,
-            'library_path': None,
-            'is': None,
+            'library_type': '',
+            'library_name': '',
+            'library_path': '',
+            'is': '',
             'is_master': False,
             'is_preview': False,
             'is_thumbnail': False,
@@ -291,10 +291,10 @@ files = {
             'temp': True
         },
         'library': {
-            'library_type': None,
-            'library_name': None,
-            'library_path': None,
-            'is': None,
+            'library_type': '',
+            'library_name': '',
+            'library_path': '',
+            'is': '',
             'is_master': False,
             'is_preview': False,
             'is_thumbnail': False,
@@ -315,10 +315,10 @@ files = {
             'temp': True
         },
         'library': {
-            'library_type': None,
-            'library_name': None,
-            'library_path': None,
-            'is': None,
+            'library_type': '',
+            'library_name': '',
+            'library_path': '',
+            'is': '',
             'is_master': False,
             'is_preview': False,
             'is_thumbnail': False,
@@ -366,10 +366,10 @@ files = {
     #         'temp': False
     #     },
     #     'library': {
-    #         'library_type': None,
-    #         'library_name': None,
-    #         'library_path': None,
-    #         'is': None,
+    #         'library_type': '',
+    #         'library_name': '',
+    #         'library_path': '',
+    #         'is': '',
     #         'is_master': False,
     #         'is_preview': False,
     #         'is_thumbnail': False,

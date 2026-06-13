@@ -1,5 +1,5 @@
 import pytest
-from photologue.images_utils import original_date
+from photologue.images.images_utils import original_date
 
 
 @pytest.mark.parametrize("test__original_date, expected_dates", [

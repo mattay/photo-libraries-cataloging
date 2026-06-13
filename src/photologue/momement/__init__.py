@@ -1,0 +1,1 @@
+"""Moment matrix analysis."""

@@ -33,8 +33,8 @@ import yaml
 
 
 # Application libs
-from photologue.files import clean_exif
-from photologue.images import Images
+from photologue.files_legacy import clean_exif
+from photologue.images_legacy import Images
 
 
 # Global access to libraries as a shared datasource

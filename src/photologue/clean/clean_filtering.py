@@ -39,9 +39,9 @@ def filter_camera_files(camera_rules: Camera, condition: str, matches: str | Non
     # else:
 
     # collect Rules
-    for filter in camera_rules.get('filters', []):
-        if filter['condition'] == condition and filter['matches'] == matches:
-            rules.append(filter)
+    for filter_on in camera_rules.get('filters', []):
+        if filter_on['condition'] == condition and filter_on['matches'] == matches:
+            rules.append(filter_on)
 
     if not rules:
         results['keep'] = files

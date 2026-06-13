@@ -1,9 +1,9 @@
 # from typing import list
 
 from photologue.catalogue import Catalogue
-from photologue.clean import Clean
+from photologue.clean_legacy import Clean
 from photologue.images_utils import file_add_props, group_image_creation
-from photologue.files import clean_name, extract_library, is_desired
+from photologue.files_legacy import clean_name, extract_library, is_desired
 
 import logging
 import re
